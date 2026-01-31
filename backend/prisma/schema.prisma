@@ -1,0 +1,346 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["public"]
+}
+
+model Usuarios {
+  id                 Int                  @id @default(autoincrement())
+  nome               String               @db.VarChar(255)
+  email              String               @unique @db.VarChar(255)
+  senha              String               @db.VarChar(255)
+  tipo               String               @default("usuario") @db.VarChar(50)
+  ativo              Boolean              @default(true)
+  createdAt          DateTime             @default(now()) @db.Timestamp(6)
+  updatedAt          DateTime             @default(now()) @updatedAt @db.Timestamp(6)
+  telefone           String?              @db.VarChar(50)
+  cargo              String?              @db.VarChar(100)
+  avatar_url         String?              @db.VarChar(500)
+  ultimo_acesso      DateTime?            @db.Timestamp(6)
+  equipes            Equipes_Membros[]
+  logs               Logs[]
+  tarefa_ocorrencias tarefa_ocorrencias[]
+  usuario_roles      usuario_roles[]
+  permissoes_custom  Json?                @default("{}")
+
+  @@index([email], map: "idx_usuarios_email")
+  @@map("usuarios")
+  @@schema("public")
+}
+
+model Prestadores {
+  id            Int               @id @default(autoincrement())
+  nome          String            @db.VarChar(255)
+  especialidade String            @db.VarChar(255)
+  telefone      String?           @db.VarChar(50)
+  email         String?           @db.VarChar(255)
+  cpf           String?           @unique @db.VarChar(14)
+  ativo         Boolean           @default(true)
+  createdAt     DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime          @default(now()) @updatedAt @db.Timestamp(6)
+  tipo_pessoa   String?           @default("PF") @db.VarChar(2)
+  cnpj          String?           @unique @db.VarChar(18)
+  atribuicoes   Atribuicoes[]
+  equipes       Equipes_Membros[]
+
+  @@index([cnpj], map: "idx_prestadores_cnpj")
+  @@index([cpf], map: "idx_prestadores_cpf")
+  @@map("prestadores")
+  @@schema("public")
+}
+
+model Equipes {
+  id          Int               @id @default(autoincrement())
+  nome        String            @db.VarChar(255)
+  descricao   String?
+  cor         String?           @default("#3B82F6") @db.VarChar(7)
+  ativa       Boolean           @default(true)
+  createdAt   DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime          @default(now()) @updatedAt @db.Timestamp(6)
+  atribuicoes Atribuicoes[]
+  membros     Equipes_Membros[]
+
+  @@map("equipes")
+  @@schema("public")
+}
+
+model Equipes_Membros {
+  id          Int          @id @default(autoincrement())
+  equipeId    Int
+  usuarioId   Int?
+  prestadorId Int?
+  papel       String       @default("membro") @db.VarChar(50)
+  createdAt   DateTime     @default(now()) @db.Timestamp(6)
+  equipe      Equipes      @relation(fields: [equipeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  prestador   Prestadores? @relation(fields: [prestadorId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usuario     Usuarios?    @relation(fields: [usuarioId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([equipeId, usuarioId])
+  @@unique([equipeId, prestadorId])
+  @@index([equipeId], map: "idx_equipes_membros_equipeid")
+  @@index([prestadorId], map: "idx_equipes_membros_prestadorid")
+  @@index([usuarioId], map: "idx_equipes_membros_usuarioid")
+  @@map("equipes_membros")
+  @@schema("public")
+}
+
+model Obras {
+  id          Int           @id @default(autoincrement())
+  nome        String        @db.VarChar(255)
+  endereco    String        @db.VarChar(500)
+  descricao   String?
+  status      String        @default("planejamento") @db.VarChar(50)
+  dataInicio  DateTime?     @db.Timestamp(6)
+  dataFim     DateTime?     @db.Timestamp(6)
+  orcamento   Decimal?      @db.Decimal(10, 2)
+  createdAt   DateTime      @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime      @default(now()) @updatedAt @db.Timestamp(6)
+  atribuicoes Atribuicoes[]
+
+  @@index([status], map: "idx_obras_status")
+  @@map("obras")
+  @@schema("public")
+}
+
+model Atribuicoes {
+  id                 Int                  @id @default(autoincrement())
+  obraId             Int
+  equipeId           Int?
+  titulo             String               @db.VarChar(255)
+  descricao          String?
+  status             String               @default("a_fazer") @db.VarChar(50)
+  prioridade         String               @default("media") @db.VarChar(50)
+  ordem              Int                  @default(0)
+  dataInicio         DateTime?            @db.Timestamp(6)
+  dataFim            DateTime?            @db.Timestamp(6)
+  createdAt          DateTime             @default(now()) @db.Timestamp(6)
+  updatedAt          DateTime             @default(now()) @updatedAt @db.Timestamp(6)
+  tipo_atribuicao    String?              @default("equipe") @db.VarChar(20)
+  prestador_id       Int?
+  dias_semana        Json?
+  equipe             Equipes?             @relation(fields: [equipeId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  obra               Obras                @relation(fields: [obraId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  prestador          Prestadores?         @relation(fields: [prestador_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  logs               Logs[]
+  tarefa_anexos      tarefa_anexos[]
+  tarefa_checklists  tarefa_checklists[]
+  tarefa_compras     tarefa_compras[]
+  tarefa_etiquetas   tarefa_etiquetas[]
+  tarefa_ocorrencias tarefa_ocorrencias[]
+
+  @@index([equipeId], map: "idx_atribuicoes_equipeid")
+  @@index([obraId], map: "idx_atribuicoes_obraid")
+  @@index([ordem], map: "idx_atribuicoes_ordem")
+  @@index([status], map: "idx_atribuicoes_status")
+  @@map("atribuicoes")
+  @@schema("public")
+}
+
+model Logs {
+  id           Int          @id @default(autoincrement())
+  usuarioId    Int
+  atribuicaoId Int?
+  acao         String       @db.VarChar(50)
+  entidade     String       @db.VarChar(50)
+  detalhes     String?
+  createdAt    DateTime     @default(now()) @db.Timestamp(6)
+  atribuicao   Atribuicoes? @relation(fields: [atribuicaoId], references: [id], onUpdate: NoAction)
+  usuario      Usuarios     @relation(fields: [usuarioId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([atribuicaoId], map: "idx_logs_atribuicaoid")
+  @@index([createdAt], map: "idx_logs_createdat")
+  @@index([entidade], map: "idx_logs_entidade")
+  @@index([usuarioId], map: "idx_logs_usuarioid")
+  @@map("logs")
+  @@schema("public")
+}
+
+model especialidades {
+  id        Int      @id @default(autoincrement())
+  nome      String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@schema("public")
+}
+
+model etiquetas {
+  id               Int                @id @default(autoincrement())
+  nome             String             @unique @db.VarChar(100)
+  cor              String?            @default("#3B82F6") @db.VarChar(7)
+  created_at       DateTime?          @default(now()) @db.Timestamp(6)
+  tarefa_etiquetas tarefa_etiquetas[]
+
+  @@schema("public")
+}
+
+model ocorrencia_anexos {
+  id                 Int                @id @default(autoincrement())
+  ocorrencia_id      Int
+  nome_arquivo       String             @db.VarChar(255)
+  url                String             @db.VarChar(500)
+  created_at         DateTime?          @default(now()) @db.Timestamp(6)
+  tarefa_ocorrencias tarefa_ocorrencias @relation(fields: [ocorrencia_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([ocorrencia_id], map: "idx_ocorrencia_anexos_ocorrencia")
+  @@schema("public")
+}
+
+model permissoes {
+  id              Int               @id @default(autoincrement())
+  modulo          String            @db.VarChar(50)
+  acao            String            @db.VarChar(50)
+  descricao       String?
+  created_at      DateTime?         @default(now()) @db.Timestamp(6)
+  role_permissoes role_permissoes[]
+
+  @@unique([modulo, acao])
+  @@index([modulo], map: "idx_permissoes_modulo")
+  @@schema("public")
+}
+
+model role_permissoes {
+  id           Int        @id @default(autoincrement())
+  role_id      Int
+  permissao_id Int
+  created_at   DateTime?  @default(now()) @db.Timestamp(6)
+  permissoes   permissoes @relation(fields: [permissao_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  roles        roles      @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([role_id, permissao_id])
+  @@index([permissao_id], map: "idx_role_permissoes_permissao")
+  @@index([role_id], map: "idx_role_permissoes_role")
+  @@schema("public")
+}
+
+model roles {
+  id                Int               @id @default(autoincrement())
+  nome              String            @unique @db.VarChar(50)
+  descricao         String?
+  nivel             Int
+  permissoes_custom Json?             @default("{}")
+  created_at        DateTime?         @default(now()) @db.Timestamp(6)
+  role_permissoes   role_permissoes[]
+  usuario_roles     usuario_roles[]
+
+  @@schema("public")
+}
+
+model tarefa_anexos {
+  id            Int         @id @default(autoincrement())
+  atribuicao_id Int
+  nome_arquivo  String      @db.VarChar(255)
+  tipo          String      @db.VarChar(50)
+  url           String      @db.VarChar(500)
+  tamanho       Int?
+  created_at    DateTime?   @default(now()) @db.Timestamp(6)
+  atribuicoes   Atribuicoes @relation(fields: [atribuicao_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([atribuicao_id], map: "idx_tarefa_anexos_atribuicao")
+  @@schema("public")
+}
+
+model tarefa_checklists {
+  id            Int         @id @default(autoincrement())
+  atribuicao_id Int
+  titulo        String      @db.VarChar(255)
+  concluido     Boolean?    @default(false)
+  ordem         Int?        @default(0)
+  created_at    DateTime?   @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?   @default(now()) @db.Timestamp(6)
+  atribuicoes   Atribuicoes @relation(fields: [atribuicao_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([atribuicao_id], map: "idx_tarefa_checklists_atribuicao")
+  @@schema("public")
+}
+
+model tarefa_compras {
+  id            Int         @id @default(autoincrement())
+  atribuicao_id Int
+  material      String      @db.VarChar(255)
+  quantidade    Decimal     @db.Decimal(10, 2)
+  unidade       String?     @db.VarChar(50)
+  status        String?     @default("pendente") @db.VarChar(50)
+  observacoes   String?
+  created_at    DateTime?   @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?   @default(now()) @db.Timestamp(6)
+  atribuicoes   Atribuicoes @relation(fields: [atribuicao_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([atribuicao_id], map: "idx_tarefa_compras_atribuicao")
+  @@index([status], map: "idx_tarefa_compras_status")
+  @@schema("public")
+}
+
+model tarefa_etiquetas {
+  id            Int         @id @default(autoincrement())
+  atribuicao_id Int
+  etiqueta_id   Int
+  created_at    DateTime?   @default(now()) @db.Timestamp(6)
+  atribuicoes   Atribuicoes @relation(fields: [atribuicao_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  etiquetas     etiquetas   @relation(fields: [etiqueta_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([atribuicao_id, etiqueta_id])
+  @@index([atribuicao_id], map: "idx_tarefa_etiquetas_atribuicao")
+  @@index([etiqueta_id], map: "idx_tarefa_etiquetas_etiqueta")
+  @@schema("public")
+}
+
+model tarefa_ocorrencias {
+  id                Int                 @id @default(autoincrement())
+  atribuicao_id     Int
+  titulo            String              @db.VarChar(255)
+  descricao         String?
+  gravidade         String?             @default("media") @db.VarChar(50)
+  status            String?             @default("aberto") @db.VarChar(50)
+  usuario_id        Int?
+  created_at        DateTime?           @default(now()) @db.Timestamp(6)
+  updated_at        DateTime?           @default(now()) @db.Timestamp(6)
+  ocorrencia_anexos ocorrencia_anexos[]
+  atribuicoes       Atribuicoes         @relation(fields: [atribuicao_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usuarios          Usuarios?           @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([atribuicao_id], map: "idx_tarefa_ocorrencias_atribuicao")
+  @@index([gravidade], map: "idx_tarefa_ocorrencias_gravidade")
+  @@index([status], map: "idx_tarefa_ocorrencias_status")
+  @@schema("public")
+}
+
+model usuario_roles {
+  id         Int       @id @default(autoincrement())
+  usuario_id Int
+  role_id    Int
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  roles      roles     @relation(fields: [role_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usuarios   Usuarios  @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([usuario_id, role_id])
+  @@index([role_id], map: "idx_usuario_roles_role")
+  @@index([usuario_id], map: "idx_usuario_roles_usuario")
+
+  @@schema("public")
+}
+
+model produtos {
+  id        Int      @id @default(autoincrement())
+  nome      String   @unique @db.VarChar(255)
+  unidade   String?  @db.VarChar(50)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  @@schema("public")
+}
+
+model unidades {
+  id        Int      @id @default(autoincrement())
+  nome      String   @unique @db.VarChar(50)
+  sigla     String   @unique @db.VarChar(10)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  @@schema("public")
+}

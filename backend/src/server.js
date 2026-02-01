@@ -48,8 +48,8 @@ app.use('/uploads', express.static(path.resolve(__dirname, '..', 'uploads')));
 
 // ==================== ROTAS ====================
 
-// Rota de health check
-app.get('/', (req, res) => {
+// Rota de status da API
+app.get('/api/status', (req, res) => {
   res.json({
     success: true,
     message: 'Obra Vista API - Backend funcionando! 🚀',

@@ -11,6 +11,8 @@ RUN npm install
 # Build frontend
 COPY frontend/ .
 # Ensure tailwindwindcss and other build tools are available
+# Configurar URL da API relativa para funcionar no mesmo domínio
+ENV VITE_API_URL=/api
 RUN npm run build
 
 # Stage 2: Setup Backend & Runtime

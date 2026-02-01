@@ -94,7 +94,7 @@ export function Unidades() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Header Sticky */}
-            <div className="sticky top-14 z-30 bg-white dark:bg-slate-950 shadow-sm px-6 py-6 border-b border-border">
+            <div className="sticky top-14 z-30 bg-background shadow-sm px-6 py-6 border-b border-border">
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold text-foreground mb-1">Unidades de Medida</h1>
                     <p className="text-sm text-muted-foreground">Gerencie as unidades para materiais</p>
@@ -108,7 +108,7 @@ export function Unidades() {
                             placeholder="Buscar unidades..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm text-foreground placeholder:text-muted-foreground"
                         />
                     </div>
                     <button
@@ -179,7 +179,7 @@ export function Unidades() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-xl shadow-2xl border border-border animate-in fade-in zoom-in duration-200">
+                    <div className="bg-background w-full max-w-sm rounded-xl shadow-2xl border border-border animate-in fade-in zoom-in duration-200">
                         <div className="flex items-center justify-between p-6 border-b border-border">
                             <h2 className="text-xl font-semibold text-foreground">
                                 {editingUnidade ? 'Editar Unidade' : 'Nova Unidade'}
@@ -198,7 +198,7 @@ export function Unidades() {
                                     required
                                     value={formData.nome}
                                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     placeholder="Ex: Quilograma"
                                 />
                             </div>
@@ -210,7 +210,7 @@ export function Unidades() {
                                     required
                                     value={formData.sigla}
                                     onChange={(e) => setFormData({ ...formData, sigla: e.target.value })}
-                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     placeholder="Ex: kg"
                                     maxLength={10}
                                 />

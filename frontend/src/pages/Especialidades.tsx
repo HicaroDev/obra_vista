@@ -128,7 +128,7 @@ export function Especialidades() {
                             placeholder="Buscar especialidade..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
+                            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground"
                         />
                     </div>
                 </div>
@@ -211,7 +211,7 @@ export function Especialidades() {
                                     value={nome}
                                     onChange={(e) => setNome(e.target.value)}
                                     placeholder="Ex: Pedreiro, Eletricista..."
-                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
+                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
                                     required
                                     autoFocus
                                 />

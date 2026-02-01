@@ -242,7 +242,7 @@ export function Prestadores() {
                         placeholder="Buscar prestadores..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                        className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
                     />
                 </div>
                 {canPerformAction('prestadores', 'criar', user) && (
@@ -447,14 +447,14 @@ export function Prestadores() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-                        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b-2 border-gray-300 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+                    <div className="bg-background border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="sticky top-0 bg-background border-b border-border px-6 py-4 flex items-center justify-between z-10">
                             <h2 className="text-xl font-medium text-foreground">
                                 {editingPrestador ? 'Editar Prestador' : 'Novo Prestador'}
                             </h2>
                             <button
                                 onClick={handleCloseModal}
-                                className="p-2 hover:bg-accent rounded-lg transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+                                className="p-2 hover:bg-accent rounded-lg transition-colors border border-transparent hover:border-border"
                             >
                                 <X size={20} />
                             </button>
@@ -468,7 +468,7 @@ export function Prestadores() {
                                         type="text"
                                         value={formData.nome}
                                         onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary transition-all text-foreground"
                                         placeholder="Ex: João Silva"
                                         required
                                     />
@@ -524,7 +524,7 @@ export function Prestadores() {
                                         type="tel"
                                         value={formData.telefone}
                                         onChange={(e) => setFormData({ ...formData, telefone: maskPhone(e.target.value) })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary transition-all text-foreground"
                                         placeholder="(11) 98765-4321"
                                         required
                                     />
@@ -544,7 +544,7 @@ export function Prestadores() {
                                                 setFormData({ ...formData, cnpj: maskCNPJ(e.target.value) });
                                             }
                                         }}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary transition-all text-foreground"
                                         placeholder={formData.tipoPessoa === 'PF' ? '000.000.000-00' : '00.000.000/0000-00'}
                                         required
                                     />
@@ -557,7 +557,7 @@ export function Prestadores() {
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     placeholder="joao@example.com"
                                 />
                             </div>
@@ -572,7 +572,7 @@ export function Prestadores() {
                                         <select
                                             value={formData.pixTipo}
                                             onChange={(e) => setFormData({ ...formData, pixTipo: e.target.value })}
-                                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         >
                                             <option value="">Selecione...</option>
                                             <option value="cpf">CPF</option>
@@ -589,7 +589,7 @@ export function Prestadores() {
                                             type="text"
                                             value={formData.pixChave}
                                             onChange={(e) => setFormData({ ...formData, pixChave: e.target.value })}
-                                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                             placeholder={
                                                 formData.pixTipo === 'cpf' ? '000.000.000-00' :
                                                     formData.pixTipo === 'cnpj' ? '00.000.000/0000-00' :
@@ -616,7 +616,7 @@ export function Prestadores() {
                                 </label>
                             </div>
 
-                            <div className="flex gap-4 pt-6 sticky bottom-0 bg-white dark:bg-gray-900 border-t border-border mt-4">
+                            <div className="flex gap-4 pt-6 sticky bottom-0 bg-background border-t border-border mt-4 z-10">
                                 <button
                                     type="button"
                                     onClick={handleCloseModal}

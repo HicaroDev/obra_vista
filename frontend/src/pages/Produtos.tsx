@@ -93,7 +93,7 @@ export function Produtos() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Header Sticky */}
-            <div className="sticky top-14 z-30 bg-white dark:bg-slate-950 border-b border-border shadow-sm px-6 py-6">
+            <div className="sticky top-14 z-30 bg-background border-b border-border shadow-sm px-6 py-6">
                 <div className="mb-6">
                     <h1 className="text-2xl font-medium text-foreground mb-1">Produtos</h1>
                     <p className="text-sm text-muted-foreground">Gerencie o catálogo de materiais e insumos</p>
@@ -107,7 +107,7 @@ export function Produtos() {
                             placeholder="Buscar produtos..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm"
+                            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm text-foreground placeholder:text-muted-foreground"
                         />
                     </div>
                     {canPerformAction('produtos', 'criar', user) && (
@@ -184,7 +184,7 @@ export function Produtos() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-xl shadow-2xl border border-border animate-in fade-in zoom-in duration-200">
+                    <div className="bg-background w-full max-w-md rounded-xl shadow-2xl border border-border animate-in fade-in zoom-in duration-200">
                         <div className="flex items-center justify-between p-6 border-b border-border">
                             <h2 className="text-xl font-semibold text-foreground">
                                 {editingProduto ? 'Editar Produto' : 'Novo Produto'}
@@ -203,7 +203,7 @@ export function Produtos() {
                                     required
                                     value={formData.nome}
                                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     placeholder="Ex: Cimento CP-II"
                                 />
                             </div>
@@ -213,7 +213,7 @@ export function Produtos() {
                                 <select
                                     value={formData.unidade}
                                     onChange={(e) => setFormData({ ...formData, unidade: e.target.value })}
-                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                 >
                                     {unidades.map(u => (
                                         <option key={u.id} value={u.sigla}>{u.nome} ({u.sigla})</option>

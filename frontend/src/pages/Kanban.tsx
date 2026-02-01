@@ -523,7 +523,7 @@ export function Kanban() {
                 <select
                     value={selectedObra || ''}
                     onChange={(e) => setSelectedObra(parseInt(e.target.value))}
-                    className="px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                 >
                     <option value="">Selecione uma obra</option>
                     {obras.map(obra => (
@@ -538,7 +538,7 @@ export function Kanban() {
                         placeholder="Buscar tarefas..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                        className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
                     />
                 </div>
 
@@ -711,8 +711,8 @@ export function Kanban() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
-                    <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 rounded-2xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl">
-                        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b-2 border-gray-300 dark:border-gray-700 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+                    <div className="bg-background border border-border rounded-2xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="sticky top-0 bg-background border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
                             <h2 className="text-lg sm:text-xl font-bold text-foreground">
                                 {editingTask ? 'Editar Tarefa' : 'Nova Tarefa'}
                             </h2>
@@ -800,7 +800,7 @@ export function Kanban() {
                                             type="text"
                                             value={formData.titulo}
                                             onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-                                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                             placeholder="Ex: Instalação elétrica 1º andar"
                                             required
                                         />
@@ -811,7 +811,7 @@ export function Kanban() {
                                         <textarea
                                             value={formData.descricao}
                                             onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                             placeholder="Descrição detalhada da tarefa..."
                                             rows={3}
                                         />
@@ -822,7 +822,7 @@ export function Kanban() {
                                         <select
                                             value={formData.prioridade}
                                             onChange={(e) => setFormData({ ...formData, prioridade: e.target.value })}
-                                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                            className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         >
                                             <option value="baixa">Baixa</option>
                                             <option value="media">Média</option>
@@ -863,7 +863,7 @@ export function Kanban() {
                                             <select
                                                 value={formData.equipeId}
                                                 onChange={(e) => setFormData({ ...formData, equipeId: e.target.value })}
-                                                className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                                className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                                 required
                                             >
                                                 <option value="">Selecione uma equipe...</option>
@@ -875,7 +875,7 @@ export function Kanban() {
                                             <select
                                                 value={formData.prestadorId}
                                                 onChange={(e) => setFormData({ ...formData, prestadorId: e.target.value })}
-                                                className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                                className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                                 required
                                             >
                                                 <option value="">Selecione um prestador...</option>
@@ -893,7 +893,7 @@ export function Kanban() {
                                                 type="date"
                                                 value={formData.dataInicio}
                                                 onChange={(e) => setFormData({ ...formData, dataInicio: e.target.value })}
-                                                className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                                className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                             />
                                         </div>
 
@@ -903,7 +903,7 @@ export function Kanban() {
                                                 type="date"
                                                 value={formData.dataFim}
                                                 onChange={(e) => setFormData({ ...formData, dataFim: e.target.value })}
-                                                className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                                className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                             />
                                         </div>
                                     </div>
@@ -1005,7 +1005,7 @@ export function Kanban() {
                                                     onChange={(e) => setNewChecklistItem(e.target.value)}
                                                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddChecklistItem())}
                                                     placeholder="Adicionar novo item ao checklist..."
-                                                    className="flex-1 px-4 py-3 bg-background border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors font-medium"
+                                                    className="flex-1 px-4 py-3 bg-background border border-input rounded-xl focus:outline-none focus:ring-2 focus:ring-primary transition-colors font-medium text-foreground"
                                                 />
                                                 <button
                                                     type="button"
@@ -1191,7 +1191,7 @@ export function Kanban() {
                                                                         setProductSuggestions([]);
                                                                     }
                                                                 }}
-                                                                className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                                                className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                                                 autoComplete="off"
                                                             />
                                                             {productSuggestions.length > 0 && (
@@ -1224,7 +1224,7 @@ export function Kanban() {
                                                             placeholder="Qtd"
                                                             value={newCompra.quantidade}
                                                             onChange={(e) => setNewCompra({ ...newCompra, quantidade: e.target.value })}
-                                                            className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                                            className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                                         />
                                                     </div>
                                                     <div className="md:col-span-2">
@@ -1233,7 +1233,7 @@ export function Kanban() {
                                                             placeholder="Un (m, kg)"
                                                             value={newCompra.unidade}
                                                             onChange={(e) => setNewCompra({ ...newCompra, unidade: e.target.value })}
-                                                            className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                                            className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                                         />
                                                     </div>
                                                     <div className="md:col-span-3">
@@ -1253,7 +1253,7 @@ export function Kanban() {
                                                             value={newCompra.observacoes}
                                                             onChange={(e) => setNewCompra({ ...newCompra, observacoes: e.target.value })}
                                                             rows={2}
-                                                            className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                                            className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                                         />
                                                     </div>
                                                 </div>
@@ -1344,7 +1344,7 @@ export function Kanban() {
                                                         placeholder="Nome da etiqueta"
                                                         value={newEtiqueta.nome}
                                                         onChange={(e) => setNewEtiqueta({ ...newEtiqueta, nome: e.target.value })}
-                                                        className="flex-1 px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                                        className="flex-1 px-3 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                                     />
                                                     <input
                                                         type="color"

@@ -281,7 +281,7 @@ export function Equipes() {
                             placeholder="Buscar equipes..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+                            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm text-foreground placeholder:text-muted-foreground"
                         />
                     </div>
                     {canPerformAction('equipes', 'criar', user) && (
@@ -443,8 +443,8 @@ export function Equipes() {
                 {/* Modal */}
                 {showModal && (
                     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-                        <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
-                            <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-border px-6 py-4 flex items-center justify-between">
+                        <div className="bg-background border border-border rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+                            <div className="sticky top-0 bg-background border-b border-border px-6 py-4 flex items-center justify-between z-10">
                                 <h2 className="text-lg font-medium text-foreground">
                                     {editingEquipe ? 'Editar Equipe' : 'Nova Equipe'}
                                 </h2>
@@ -463,7 +463,7 @@ export function Equipes() {
                                         type="text"
                                         value={formData.nome}
                                         onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         placeholder="Ex: Equipe Estrutural"
                                         required
                                     />
@@ -474,7 +474,7 @@ export function Equipes() {
                                     <textarea
                                         value={formData.descricao}
                                         onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         placeholder="Descrição da equipe..."
                                         rows={3}
                                     />
@@ -535,7 +535,7 @@ export function Equipes() {
                 {/* Modal de Gerenciamento de Membros */}
                 {showMembrosModal && selectedEquipe && (
                     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
-                        <div className="bg-white dark:bg-gray-900 border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="bg-background border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                             {/* Header */}
                             <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-card/50">
                                 <div>
@@ -624,7 +624,7 @@ export function Equipes() {
                                                 placeholder="Buscar profissional..."
                                                 value={searchingPrestador}
                                                 onChange={(e) => setSearchingPrestador(e.target.value)}
-                                                className="w-full pl-9 pr-4 py-1.5 bg-background border border-input rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                                                className="w-full pl-9 pr-4 py-1.5 bg-background border border-input rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground"
                                             />
                                         </div>
                                     </div>

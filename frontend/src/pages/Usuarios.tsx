@@ -311,7 +311,7 @@ export function Usuarios() {
                     <div className="bg-background border border-border rounded-2xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl">
                         <div className="sticky top-0 bg-background border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
                             <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                                {editingUsuario ? 'Editar Usuário' : 'Novo Usuário'}
+                                {editingUsuario ? 'Editar Usuário' : 'Cadastrar Novo Usuário'}
                             </h2>
                             <button
                                 onClick={handleCloseModal}
@@ -324,24 +324,24 @@ export function Usuarios() {
                         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Nome *</label>
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Nome *</label>
                                     <input
                                         type="text"
                                         value={formData.nome}
                                         onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                         placeholder="Ex: João Silva"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Email *</label>
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Email *</label>
                                     <input
                                         type="email"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                         placeholder="joao@exemplo.com"
                                         required
                                     />
@@ -350,26 +350,26 @@ export function Usuarios() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">
+                                    <label className="block text-sm font-medium mb-2 text-foreground">
                                         Senha {editingUsuario ? '(deixe em branco para manter)' : '*'}
                                     </label>
                                     <input
                                         type="password"
                                         value={formData.senha}
                                         onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                         placeholder="••••••••"
                                         required={!editingUsuario}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Telefone</label>
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Telefone</label>
                                     <input
                                         type="tel"
                                         value={formData.telefone}
                                         onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                         placeholder="(11) 98765-4321"
                                     />
                                 </div>
@@ -388,7 +388,7 @@ export function Usuarios() {
 
                             {/* Seleção de Roles */}
                             <div>
-                                <label className="block text-sm font-medium mb-3">Perfil de Acesso (Role) *</label>
+                                <label className="block text-sm font-medium mb-3 text-foreground">Perfil de Acesso (Role) *</label>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
                                     {roles.map((role) => (
                                         <label
@@ -419,7 +419,7 @@ export function Usuarios() {
 
                             {/* Tipo de Conta (Admin ou Usuário) */}
                             <div>
-                                <label className="block text-sm font-medium mb-3">Tipo de Conta</label>
+                                <label className="block text-sm font-medium mb-3 text-foreground">Tipo de Conta</label>
                                 <div className="grid grid-cols-2 gap-4 mb-4">
                                     <label
                                         className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all ${

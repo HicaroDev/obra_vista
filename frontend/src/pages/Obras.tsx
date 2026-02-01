@@ -299,7 +299,7 @@ export function Obras() {
                     <div className="bg-background border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
                         <div className="sticky top-0 bg-background border-b border-border px-6 py-4 flex items-center justify-between z-10">
                             <h2 className="text-xl font-bold text-foreground">
-                                {editingObra ? 'Editar Obra' : 'Nova Obra'}
+                                {editingObra ? 'Editar Obra' : 'Cadastrar Nova Obra'}
                             </h2>
                             <button
                                 onClick={handleCloseModal}
@@ -316,7 +316,7 @@ export function Obras() {
                                     type="text"
                                     value={formData.nome}
                                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                     placeholder="Ex: Edifício Residencial Centro"
                                     required
                                 />
@@ -328,7 +328,7 @@ export function Obras() {
                                     type="text"
                                     value={formData.endereco}
                                     onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
-                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                     placeholder="Ex: Rua Principal, 123 - Centro"
                                     required
                                 />
@@ -339,7 +339,7 @@ export function Obras() {
                                 <textarea
                                     value={formData.descricao}
                                     onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                     placeholder="Descrição detalhada da obra..."
                                     rows={3}
                                 />
@@ -347,11 +347,11 @@ export function Obras() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Status</label>
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Status</label>
                                     <select
                                         value={formData.status}
                                         onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                     >
                                         <option value="orcamento">Orçamento</option>
                                         <option value="aprovado">Aprovado</option>
@@ -364,12 +364,12 @@ export function Obras() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Responsável</label>
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Responsável</label>
                                     <input
                                         type="text"
                                         value={formData.responsavel}
                                         onChange={(e) => setFormData({ ...formData, responsavel: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                         placeholder="Ex: João Silva"
                                     />
                                 </div>
@@ -377,23 +377,23 @@ export function Obras() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Latitude</label>
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Latitude</label>
                                     <input
                                         type="text"
                                         value={formData.latitude}
                                         onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                         placeholder="Ex: -23.550520"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Longitude</label>
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Longitude</label>
                                     <input
                                         type="text"
                                         value={formData.longitude}
                                         onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                         placeholder="Ex: -46.633308"
                                     />
                                 </div>
@@ -401,22 +401,22 @@ export function Obras() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Data de Início</label>
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Data de Início</label>
                                     <input
                                         type="date"
                                         value={formData.dataInicio}
                                         onChange={(e) => setFormData({ ...formData, dataInicio: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Data de Término</label>
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Data de Término</label>
                                     <input
                                         type="date"
                                         value={formData.dataFim}
                                         onChange={(e) => setFormData({ ...formData, dataFim: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
                                     />
                                 </div>
                             </div>

@@ -267,7 +267,7 @@ export function Equipes() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Header Sticky */}
-            <div className="sticky top-14 z-40 bg-white dark:bg-gray-900 px-6 py-6 border-b border-border shadow-sm">
+            <div className="sticky top-14 z-30 bg-white dark:bg-slate-950 px-6 py-6 border-b border-border shadow-sm">
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold text-foreground mb-1">Equipes</h1>
                     <p className="text-sm text-muted-foreground">Gerencie as equipes e seus membros</p>

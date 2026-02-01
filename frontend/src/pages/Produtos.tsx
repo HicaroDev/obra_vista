@@ -93,7 +93,7 @@ export function Produtos() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Header Sticky */}
-            <div className="sticky top-14 z-30 bg-white dark:bg-gray-900 border-b border-border shadow-sm px-6 py-6">
+            <div className="sticky top-14 z-30 bg-white dark:bg-slate-950 border-b border-border shadow-sm px-6 py-6">
                 <div className="mb-6">
                     <h1 className="text-2xl font-medium text-foreground mb-1">Produtos</h1>
                     <p className="text-sm text-muted-foreground">Gerencie o catálogo de materiais e insumos</p>

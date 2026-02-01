@@ -64,6 +64,7 @@ body {
   --input: 217.2 32.6% 17.5%;
   --ring: 224.3 76.3% 48%;
 }
+
 /* Estilo de Barra de Rolagem Customizado */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
@@ -80,4 +81,14 @@ body {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground));
+}
+
+@layer utilities {
+  .bg-background {
+    background-color: hsl(var(--background));
+  }
+
+  .bg-card {
+    background-color: hsl(var(--card));
+  }
 }

@@ -82,7 +82,7 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Topbar */}
-      <header className="fixed top-0 left-0 right-0 h-14 bg-white dark:bg-gray-950 border-b border-border z-50 shadow-sm">
+      <header className="fixed top-0 left-0 right-0 h-14 bg-background border-b border-border z-50 shadow-sm">
         <div className="h-full px-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
@@ -135,7 +135,7 @@ export function Layout({ children }: LayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 lg:top-14 bottom-0 bg-white dark:bg-gray-900 border-r border-border transition-all duration-300 z-[60] lg:z-40',
+          'fixed left-0 top-0 lg:top-14 bottom-0 bg-background border-r border-border transition-all duration-300 z-[60] lg:z-40',
           'w-64 shadow-2xl lg:shadow-none',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}

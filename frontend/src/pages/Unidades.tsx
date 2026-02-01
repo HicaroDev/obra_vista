@@ -94,7 +94,7 @@ export function Unidades() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Header Sticky */}
-            <div className="sticky top-14 z-30 bg-white dark:bg-gray-900 shadow-sm px-6 py-6 border-b border-border">
+            <div className="sticky top-14 z-30 bg-white dark:bg-slate-950 shadow-sm px-6 py-6 border-b border-border">
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold text-foreground mb-1">Unidades de Medida</h1>
                     <p className="text-sm text-muted-foreground">Gerencie as unidades para materiais</p>

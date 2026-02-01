@@ -190,7 +190,7 @@ export function Especialidades() {
             {/* Modal de Cadastro/Edição */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
-                    <div className="bg-white dark:bg-gray-900 border border-border rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                    <div className="bg-background border border-border rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                             <h2 className="text-lg font-medium">
                                 {editingEsp ? 'Editar Especialidade' : 'Nova Especialidade'}

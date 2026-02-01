@@ -168,7 +168,7 @@ export function Obras() {
                         placeholder="Buscar obras..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                        className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
                     />
                 </div>
                 {canPerformAction('obras', 'criar', user) && (
@@ -296,8 +296,8 @@ export function Obras() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-                        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b-2 border-gray-300 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+                    <div className="bg-background border border-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="sticky top-0 bg-background border-b border-border px-6 py-4 flex items-center justify-between z-10">
                             <h2 className="text-xl font-bold text-foreground">
                                 {editingObra ? 'Editar Obra' : 'Nova Obra'}
                             </h2>
@@ -316,7 +316,7 @@ export function Obras() {
                                     type="text"
                                     value={formData.nome}
                                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     placeholder="Ex: Edifício Residencial Centro"
                                     required
                                 />
@@ -328,7 +328,7 @@ export function Obras() {
                                     type="text"
                                     value={formData.endereco}
                                     onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
-                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     placeholder="Ex: Rua Principal, 123 - Centro"
                                     required
                                 />
@@ -339,7 +339,7 @@ export function Obras() {
                                 <textarea
                                     value={formData.descricao}
                                     onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     placeholder="Descrição detalhada da obra..."
                                     rows={3}
                                 />
@@ -351,7 +351,7 @@ export function Obras() {
                                     <select
                                         value={formData.status}
                                         onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     >
                                         <option value="orcamento">Orçamento</option>
                                         <option value="aprovado">Aprovado</option>
@@ -369,7 +369,7 @@ export function Obras() {
                                         type="text"
                                         value={formData.responsavel}
                                         onChange={(e) => setFormData({ ...formData, responsavel: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         placeholder="Ex: João Silva"
                                     />
                                 </div>
@@ -382,7 +382,7 @@ export function Obras() {
                                         type="text"
                                         value={formData.latitude}
                                         onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         placeholder="Ex: -23.550520"
                                     />
                                 </div>
@@ -393,7 +393,7 @@ export function Obras() {
                                         type="text"
                                         value={formData.longitude}
                                         onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         placeholder="Ex: -46.633308"
                                     />
                                 </div>
@@ -406,7 +406,7 @@ export function Obras() {
                                         type="date"
                                         value={formData.dataInicio}
                                         onChange={(e) => setFormData({ ...formData, dataInicio: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     />
                                 </div>
 
@@ -416,7 +416,7 @@ export function Obras() {
                                         type="date"
                                         value={formData.dataFim}
                                         onChange={(e) => setFormData({ ...formData, dataFim: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     />
                                 </div>
                             </div>

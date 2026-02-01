@@ -194,7 +194,7 @@ export function Usuarios() {
                         placeholder="Buscar por nome, email ou cargo..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                        className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
                     />
                 </div>
             </div>
@@ -308,8 +308,8 @@ export function Usuarios() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
-                    <div className="bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 rounded-2xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl">
-                        <div className="sticky top-0 bg-white dark:bg-gray-900 border-b-2 border-gray-300 dark:border-gray-700 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+                    <div className="bg-background border border-border rounded-2xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="sticky top-0 bg-background border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
                             <h2 className="text-lg sm:text-xl font-bold text-foreground">
                                 {editingUsuario ? 'Editar Usuário' : 'Novo Usuário'}
                             </h2>
@@ -329,7 +329,7 @@ export function Usuarios() {
                                         type="text"
                                         value={formData.nome}
                                         onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         placeholder="Ex: João Silva"
                                         required
                                     />
@@ -341,7 +341,7 @@ export function Usuarios() {
                                         type="email"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         placeholder="joao@exemplo.com"
                                         required
                                     />
@@ -357,7 +357,7 @@ export function Usuarios() {
                                         type="password"
                                         value={formData.senha}
                                         onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         placeholder="••••••••"
                                         required={!editingUsuario}
                                     />
@@ -369,7 +369,7 @@ export function Usuarios() {
                                         type="tel"
                                         value={formData.telefone}
                                         onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                         placeholder="(11) 98765-4321"
                                     />
                                 </div>
@@ -381,7 +381,7 @@ export function Usuarios() {
                                     type="text"
                                     value={formData.cargo}
                                     onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
-                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
                                     placeholder="Ex: Engenheiro Civil"
                                 />
                             </div>
@@ -454,8 +454,8 @@ export function Usuarios() {
 
                                     <label
                                         className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all ${!formData.permissoesCustom?.admin
-                                                ? 'bg-primary/10 border-primary shadow-sm'
-                                                : 'bg-background border-input hover:border-primary/50'
+                                            ? 'bg-primary/10 border-primary shadow-sm'
+                                            : 'bg-background border-input hover:border-primary/50'
                                             }`}
                                         onClick={() => {
                                             // Ao clicar em Padrão, remove flag admin (mantém permissões atuais ou reseta para visualizar? Melhor manter)
@@ -518,7 +518,7 @@ export function Usuarios() {
                                                                 }
                                                             }))}
                                                             disabled={formData.permissoesCustom?.admin === true}
-                                                            className="w-full bg-background border border-input rounded px-2 py-1 text-xs focus:ring-1 focus:ring-primary disabled:opacity-50"
+                                                            className="w-full bg-background border border-input rounded px-2 py-1 text-xs focus:ring-1 focus:ring-primary disabled:opacity-50 text-foreground"
                                                         >
                                                             <option value="bloqueado">🔒 Bloqueado</option>
                                                             <option value="visualizar">👁️ Visualizar (Apenas Leitura)</option>

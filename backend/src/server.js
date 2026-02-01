@@ -88,7 +88,23 @@ app.use('/api/unidades', unidadesRoutes);
 
 // ==================== ERROR HANDLING ====================
 
-// 404 - Rota não encontrada
+// Servir arquivos estáticos do Frontend em Produção
+if (process.env.NODE_ENV === 'production') {
+  const publicPath = path.resolve(__dirname, '..', 'public');
+
+  // Servir arquivos estáticos (JS, CSS, Imagens)
+  app.use(express.static(publicPath));
+
+  // Qualquer outra rota que não comece com /api retorna o index.html (SPA)
+  app.get('*', (req, res, next) => {
+    if (req.url.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.resolve(publicPath, 'index.html'));
+  });
+}
+
+// 404 - Rota não encontrada (apenas para API ou se arquivo não existir)
 app.use(notFoundHandler);
 
 // Error handler global

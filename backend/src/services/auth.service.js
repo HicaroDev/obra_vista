@@ -82,10 +82,15 @@ class AuthService {
       tipo: user.tipo,
     });
 
-    // Remover senha do retorno
-    const { senha: _, ...userWithoutPassword } = user;
+    // Remover senha do retorno e formatar permissões
+    const { senha: _, permissoes_custom, ...userWithoutPassword } = user;
 
-    return { user: userWithoutPassword, token };
+    const userFormatted = {
+      ...userWithoutPassword,
+      permissoesCustom: permissoes_custom || {}
+    };
+
+    return { user: userFormatted, token };
   }
 
   /**
@@ -100,6 +105,7 @@ class AuthService {
         email: true,
         tipo: true,
         ativo: true,
+        permissoes_custom: true, // Adicionado campo de permissões
         createdAt: true,
         updatedAt: true,
       },
@@ -109,7 +115,11 @@ class AuthService {
       throw new Error('Usuário não encontrado');
     }
 
-    return user;
+    // Mapear snake_case para camelCase para o frontend
+    return {
+      ...user,
+      permissoesCustom: user.permissoes_custom || {}
+    };
   }
 
   /**
@@ -131,7 +141,7 @@ class AuthService {
     const updateData = {};
 
     if (nome) updateData.nome = nome;
-    
+
     if (email && email !== user.email) {
       // Verificar se novo email já existe
       const existingUser = await prisma.usuarios.findUnique({

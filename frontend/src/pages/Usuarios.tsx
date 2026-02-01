@@ -417,14 +417,75 @@ export function Usuarios() {
                                 </div>
                             </div>
 
-                            {/* Permissões Específicas */}
+                            {/* Tipo de Conta (Admin ou Usuário) */}
                             <div>
+                                <label className="block text-sm font-medium mb-3">Tipo de Conta</label>
+                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                    <label
+                                        className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                                            // Se tiver a role de Admin (id 1 assumido ou lógica de permissoes) ou flag específica
+                                            // Simplificação: Vamos usar um estado local para controlar visualmente, mas salvar nas roles/permissoes
+                                            formData.permissoesCustom?.admin === true
+                                                ? 'bg-primary/10 border-primary shadow-sm'
+                                                : 'bg-background border-input hover:border-primary/50'
+                                            }`}
+                                        onClick={() => {
+                                            // Ao clicar em Admin, define todas as permissões como 'editar' e adiciona flag admin
+                                            const allPermissions = [
+                                                'dashboard', 'obras', 'equipes', 'usuarios',
+                                                'prestadores', 'produtos', 'financeiro',
+                                                'relatorios', 'configuracoes'
+                                            ].reduce((acc, key) => ({ ...acc, [key]: 'editar' }), {});
+
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                permissoesCustom: { ...allPermissions, admin: true }
+                                            }));
+                                        }}
+                                    >
+                                        <Shield size={24} className={formData.permissoesCustom?.admin === true ? 'text-primary' : 'text-muted-foreground'} />
+                                        <span className={`mt-2 font-medium ${formData.permissoesCustom?.admin === true ? 'text-primary' : 'text-foreground'}`}>
+                                            Administrador
+                                        </span>
+                                        <span className="text-xs text-muted-foreground mt-1 text-center">
+                                            Acesso total a todas as funcionalidades
+                                        </span>
+                                    </label>
+
+                                    <label
+                                        className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all ${!formData.permissoesCustom?.admin
+                                                ? 'bg-primary/10 border-primary shadow-sm'
+                                                : 'bg-background border-input hover:border-primary/50'
+                                            }`}
+                                        onClick={() => {
+                                            // Ao clicar em Padrão, remove flag admin (mantém permissões atuais ou reseta para visualizar? Melhor manter)
+                                            setFormData(prev => {
+                                                const newPerms = { ...prev.permissoesCustom };
+                                                delete newPerms.admin;
+                                                return { ...prev, permissoesCustom: newPerms };
+                                            });
+                                        }}
+                                    >
+                                        <Users size={24} className={!formData.permissoesCustom?.admin ? 'text-primary' : 'text-muted-foreground'} />
+                                        <span className={`mt-2 font-medium ${!formData.permissoesCustom?.admin ? 'text-primary' : 'text-foreground'}`}>
+                                            Usuário Padrão
+                                        </span>
+                                        <span className="text-xs text-muted-foreground mt-1 text-center">
+                                            Configurar permissões por página
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Detalhes de Permissões (Só mostra ou habilita se for Padrão) */}
+                            <div className={`transition-opacity duration-200 ${formData.permissoesCustom?.admin ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}`}>
                                 <div className="flex items-center gap-2 mb-3">
                                     <Shield size={18} className="text-primary" />
                                     <label className="text-sm font-medium">Permissões Específicas por Página</label>
                                 </div>
 
                                 <div className="bg-accent/30 rounded-lg border border-border overflow-hidden">
+                                    {/* ... tabela existente ... */}
                                     <table className="w-full text-sm">
                                         <thead className="bg-accent/50 border-b border-border">
                                             <tr>
@@ -456,7 +517,8 @@ export function Usuarios() {
                                                                     [page.key]: e.target.value
                                                                 }
                                                             }))}
-                                                            className="w-full bg-background border border-input rounded px-2 py-1 text-xs focus:ring-1 focus:ring-primary"
+                                                            disabled={formData.permissoesCustom?.admin === true}
+                                                            className="w-full bg-background border border-input rounded px-2 py-1 text-xs focus:ring-1 focus:ring-primary disabled:opacity-50"
                                                         >
                                                             <option value="bloqueado">🔒 Bloqueado</option>
                                                             <option value="visualizar">👁️ Visualizar (Apenas Leitura)</option>
@@ -474,16 +536,16 @@ export function Usuarios() {
                             </div>
 
                             {/* Status Ativo */}
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 mt-4">
                                 <input
                                     type="checkbox"
                                     id="ativo"
                                     checked={formData.ativo}
                                     onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-                                    className="w-4 h-4"
+                                    className="w-4 h-4 rounded border-input text-primary focus:ring-primary"
                                 />
                                 <label htmlFor="ativo" className="text-sm font-medium cursor-pointer">
-                                    Usuário ativo
+                                    Usuário ativo (pode fazer login no sistema)
                                 </label>
                             </div>
 

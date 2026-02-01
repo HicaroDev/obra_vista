@@ -93,7 +93,7 @@ export function Layout({ children }: LayoutProps) {
             </button>
             <Link to="/" className="flex items-center gap-2">
               <img src="/logo.png" alt="Obra Vista" className="h-8 w-auto object-contain" />
-              <h1 className="text-lg md:text-xl font-bold text-primary hidden md:block">Obra Vista</h1>
+              <h1 className="text-lg md:text-xl font-bold text-primary block">Obra Vista</h1>
             </Link>
           </div>
 

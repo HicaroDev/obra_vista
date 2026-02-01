@@ -3,9 +3,10 @@ FROM node:20-alpine as frontend-builder
 
 WORKDIR /app/frontend
 
-# Install dependencies (incorporating cache)
+# Install dependencies
 COPY frontend/package*.json ./
-RUN npm ci
+# Usando npm install para garantir que funcione mesmo sem package-lock.json
+RUN npm install
 
 # Build frontend
 COPY frontend/ .
@@ -24,7 +25,8 @@ WORKDIR /app/backend
 
 # Install backend dependencies
 COPY backend/package*.json ./
-RUN npm ci --only=production
+# Usando npm install --only=production para instalar apenas dependencias de produção
+RUN npm install --only=production
 
 # Copy backend source code
 COPY backend/ .
@@ -43,5 +45,4 @@ ENV PORT=3000
 EXPOSE 3000
 
 # Start command
-# We use a shell command to ensure migrations run if needed, but for safety in generic envs, just start
 CMD ["npm", "start"]

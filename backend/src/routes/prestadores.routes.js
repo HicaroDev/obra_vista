@@ -95,10 +95,30 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     const client = getDbClient();
     try {
+        console.log('Recebendo POST /prestadores:', req.body); // Debug Log
+
         const {
             nome, especialidade, telefone, email, tipoPessoa = 'PF', cpf, cnpj, ativo = true,
-            pixTipo, pixChave, tipoContrato, valorDiaria, valorValeRefeicao, valorValeTransporte, salario, bonificacao
+            pixTipo, pixChave,
+            tipoContrato, tipo_contrato, // Aceita ambos os casos snake/camel
+            valorDiaria, valor_diaria,
+            valorValeRefeicao, valor_vale_refeicao,
+            valorValeTransporte, valor_vale_transporte,
+            salario, bonificacao,
+            diaPagamento, dia_pagamento,
+            diaVale, dia_vale,
+            valorAdiantamento, valor_adiantamento
         } = req.body;
+
+        // Normalização de campos (snake_case ou camelCase)
+        const _tipoContrato = tipoContrato || tipo_contrato || 'diaria';
+        const _valorDiaria = valorDiaria !== undefined ? valorDiaria : valor_diaria;
+        const _valorVR = valorValeRefeicao !== undefined ? valorValeRefeicao : valor_vale_refeicao;
+        const _valorVT = valorValeTransporte !== undefined ? valorValeTransporte : valor_vale_transporte;
+
+        const _diaPagamento = diaPagamento !== undefined ? diaPagamento : dia_pagamento;
+        const _diaVale = diaVale !== undefined ? diaVale : dia_vale;
+        const _valorAdiantamento = valorAdiantamento !== undefined ? valorAdiantamento : valor_adiantamento;
 
         if (!nome || !especialidade) {
             return res.status(400).json({
@@ -126,9 +146,10 @@ router.post('/', async (req, res) => {
         const result = await client.query(`
             INSERT INTO prestadores (
                 nome, especialidade, telefone, email, tipo_pessoa, cpf, cnpj, ativo,
-                pix_tipo, pix_chave, tipo_contrato, valor_diaria, valor_vale_refeicao, valor_vale_transporte, salario, bonificacao
+                pix_tipo, pix_chave, tipo_contrato, valor_diaria, valor_vale_refeicao, valor_vale_transporte, salario, bonificacao,
+                dia_pagamento, dia_vale, valor_adiantamento
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
             RETURNING 
                 id, nome, especialidade, telefone, email,
                 tipo_pessoa as "tipoPessoa",
@@ -143,11 +164,18 @@ router.post('/', async (req, res) => {
                 valor_vale_refeicao::numeric as "valorValeRefeicao",
                 valor_vale_transporte::numeric as "valorValeTransporte",
                 salario::numeric,
-                bonificacao::numeric
+                bonificacao::numeric,
+                dia_pagamento as "diaPagamento",
+                dia_vale as "diaVale",
+                valor_adiantamento::numeric as "valorAdiantamento"
         `, [
             nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo,
-            pixTipo, pixChave, tipoContrato, valorDiaria, valorValeRefeicao, valorValeTransporte, salario, bonificacao
+            pixTipo || null, pixChave || null, _tipoContrato,
+            _valorDiaria || null, _valorVR || null, _valorVT || null,
+            salario || null, bonificacao || null,
+            _diaPagamento || null, _diaVale || null, _valorAdiantamento || null
         ]);
+
 
         res.status(201).json({
             success: true,
@@ -178,8 +206,25 @@ router.put('/:id', async (req, res) => {
     try {
         const {
             nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo,
-            pixTipo, pixChave, tipoContrato, valorDiaria, valorValeRefeicao, valorValeTransporte, salario, bonificacao
+            pixTipo, pixChave, tipo_contrato, tipoContrato,
+            valorDiaria, valor_diaria,
+            valorValeRefeicao, valor_vale_refeicao,
+            valorValeTransporte, valor_vale_transporte,
+            salario, bonificacao,
+            // Novos campos CLT
+            diaPagamento, dia_pagamento,
+            diaVale, dia_vale,
+            valorAdiantamento, valor_adiantamento
         } = req.body;
+
+        const _tipoContrato = tipoContrato || tipo_contrato;
+        const _valorDiaria = valorDiaria !== undefined ? valorDiaria : valor_diaria;
+        const _valorVR = valorValeRefeicao !== undefined ? valorValeRefeicao : valor_vale_refeicao;
+        const _valorVT = valorValeTransporte !== undefined ? valorValeTransporte : valor_vale_transporte;
+
+        const _diaPagamento = diaPagamento !== undefined ? diaPagamento : dia_pagamento;
+        const _diaVale = diaVale !== undefined ? diaVale : dia_vale;
+        const _valorAdiantamento = valorAdiantamento !== undefined ? valorAdiantamento : valor_adiantamento;
 
         await client.connect();
         const result = await client.query(`
@@ -201,8 +246,11 @@ router.put('/:id', async (req, res) => {
                 valor_vale_transporte = COALESCE($14, valor_vale_transporte),
                 salario = COALESCE($15, salario),
                 bonificacao = COALESCE($16, bonificacao),
+                dia_pagamento = COALESCE($17, dia_pagamento),
+                dia_vale = COALESCE($18, dia_vale),
+                valor_adiantamento = COALESCE($19, valor_adiantamento),
                 "updatedAt" = CURRENT_TIMESTAMP
-            WHERE id = $17
+            WHERE id = $20
             RETURNING 
                 id, nome, especialidade, telefone, email,
                 tipo_pessoa as "tipoPessoa",
@@ -217,10 +265,16 @@ router.put('/:id', async (req, res) => {
                 valor_vale_refeicao::numeric as "valorValeRefeicao",
                 valor_vale_transporte::numeric as "valorValeTransporte",
                 salario::numeric,
-                bonificacao::numeric
+                bonificacao::numeric,
+                dia_pagamento as "diaPagamento",
+                dia_vale as "diaVale",
+                valor_adiantamento::numeric as "valorAdiantamento"
         `, [
             nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo,
-            pixTipo, pixChave, tipoContrato, valorDiaria, valorValeRefeicao, valorValeTransporte, salario, bonificacao,
+            pixTipo || null, pixChave || null, _tipoContrato || null,
+            _valorDiaria || null, _valorVR || null, _valorVT || null,
+            salario || null, bonificacao || null,
+            _diaPagamento || null, _diaVale || null, _valorAdiantamento || null,
             req.params.id
         ]);
 

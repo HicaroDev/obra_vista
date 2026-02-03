@@ -22,6 +22,7 @@ const etiquetasRoutes = require('./routes/etiquetas.routes');
 const comprasRoutes = require('./routes/compras.routes');
 const produtosRoutes = require('./routes/produtos.routes');
 const unidadesRoutes = require('./routes/unidades.routes');
+const frequenciaRoutes = require('./routes/frequencia.routes');
 
 // Criar app Express
 const app = express();
@@ -85,6 +86,7 @@ app.use('/api/etiquetas', etiquetasRoutes);
 app.use('/api/compras', comprasRoutes);
 app.use('/api/produtos', produtosRoutes);
 app.use('/api/unidades', unidadesRoutes);
+app.use('/api/frequencia', frequenciaRoutes);
 
 // ==================== ERROR HANDLING ====================
 

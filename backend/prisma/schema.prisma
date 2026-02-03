@@ -57,8 +57,15 @@ model Prestadores {
   valor_vale_transporte Decimal?  @db.Decimal(10, 2)
   salario               Decimal?  @db.Decimal(10, 2)
   bonificacao           Decimal?  @db.Decimal(10, 2)
+  
+  // Específico CLT
+  dia_pagamento         Int?      // Dia do mês para pagamento de salário (ex: 5)
+  dia_vale              Int?      // Dia do mês para pagamento do vale (ex: 20)
+  valor_adiantamento    Decimal?  @db.Decimal(10, 2) // Valor fixo do vale/adiantamento
   atribuicoes   Atribuicoes[]
   equipes       Equipes_Membros[]
+  frequencia    Frequencia[]
+  descontos     Desconto[]
 
   @@index([cnpj], map: "idx_prestadores_cnpj")
   @@index([cpf], map: "idx_prestadores_cpf")
@@ -113,6 +120,7 @@ model Obras {
   createdAt   DateTime      @default(now()) @db.Timestamp(6)
   updatedAt   DateTime      @default(now()) @updatedAt @db.Timestamp(6)
   atribuicoes Atribuicoes[]
+  frequencia  Frequencia[]
 
   @@index([status], map: "idx_obras_status")
   @@map("obras")
@@ -354,5 +362,36 @@ model unidades {
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
 
+  @@schema("public")
+}
+
+model Frequencia {
+  id          Int      @id @default(autoincrement())
+  data        DateTime @db.Date // Apenas a data
+  prestador   Prestadores @relation(fields: [prestadorId], references: [id], onDelete: Cascade)
+  prestadorId Int
+  obra        Obras?    @relation(fields: [obraId], references: [id], onDelete: SetNull)
+  obraId      Int?
+  presente    Boolean   @default(false)
+  observacao  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([data, prestadorId]) // Um registro por prestador por dia
+  @@map("frequencia")
+  @@schema("public")
+}
+
+model Desconto {
+  id          Int      @id @default(autoincrement())
+  prestador   Prestadores @relation(fields: [prestadorId], references: [id], onDelete: Cascade)
+  prestadorId Int
+  data        DateTime @db.Date // Data do desconto
+  valor       Decimal  @db.Decimal(10, 2)
+  descricao   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("descontos")
   @@schema("public")
 }

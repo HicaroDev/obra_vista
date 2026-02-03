@@ -45,7 +45,7 @@ async function fetchApi<T>(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Erro na requisição');
+    throw new Error(error.error || error.message || 'Erro na requisição');
   }
 
   return response.json();
@@ -569,6 +569,42 @@ export const unidadesApi = {
   delete: async (id: number): Promise<ApiResponse<void>> => {
     return fetchApi<void>(`/unidades/${id}`, {
       method: 'DELETE',
+    });
+  },
+};
+
+// ==================== FREQUÊNCIA (PONTO VIRTUAL) ====================
+
+export const frequenciaApi = {
+  getByData: async (data: string): Promise<ApiResponse<import('../types').FrequenciaDiaria[]>> => {
+    return fetchApi<import('../types').FrequenciaDiaria[]>(`/frequencia?data=${data}`);
+  },
+
+  getRelatorio: async (inicio: string, fim: string): Promise<ApiResponse<any[]>> => {
+    return fetchApi<any[]>(`/frequencia/relatorio?inicio=${inicio}&fim=${fim}`);
+  },
+
+  addDesconto: async (data: { prestadorId: number; data: string; valor: number; descricao: string }): Promise<ApiResponse<any>> => {
+    return fetchApi('/frequencia/desconto', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  getDescontos: async (prestadorId: number, inicio?: string, fim?: string): Promise<ApiResponse<any>> => {
+    return fetchApi(`/frequencia/descontos?prestadorId=${prestadorId}${inicio && fim ? `&inicio=${inicio}&fim=${fim}` : ''}`);
+  },
+
+  salvar: async (data: {
+    data: string;
+    prestadorId: number;
+    obraId?: number | null;
+    presente: boolean;
+    observacao?: string;
+  }): Promise<ApiResponse<any>> => {
+    return fetchApi('/frequencia', {
+      method: 'POST',
+      body: JSON.stringify(data),
     });
   },
 };

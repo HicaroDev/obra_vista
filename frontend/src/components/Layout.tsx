@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   PiList, PiX, PiSignOut,
-  PiHouse, PiUsersThree, PiBuildings, PiKanban,
+  PiHouse, PiUsersThree, PiBuildings, PiKanban, PiCalendarCheck, PiMoney,
   PiBriefcase, PiFileText, PiUserGear, PiGear,
   PiCaretDown, PiCaretRight, PiFolderPlus, PiPackage, PiScales
 } from 'react-icons/pi';
@@ -34,6 +34,7 @@ export function Layout({ children }: LayoutProps) {
     { name: 'Dashboard', href: '/', icon: PiHouse, page: 'dashboard' },
     { name: 'Obras', href: '/obras', icon: PiBuildings, page: 'obras' },
     { name: 'Kanban', href: '/kanban', icon: PiKanban, page: 'kanban' },
+    { name: 'Ponto Virtual', href: '/frequencia', icon: PiCalendarCheck, page: 'kanban' },
     { name: 'Equipes', href: '/equipes', icon: PiUsersThree, page: 'equipes' },
     { name: 'Relatórios', href: '/relatorios', icon: PiFileText, page: 'relatorios' },
     {

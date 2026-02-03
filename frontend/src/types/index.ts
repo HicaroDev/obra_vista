@@ -284,3 +284,14 @@ export interface FiltrosAtribuicao {
   prioridade?: Atribuicao['prioridade'];
   busca?: string;
 }
+
+export interface FrequenciaDiaria {
+  prestadorId: number;
+  nome: string;
+  especialidade: string;
+  frequenciaId?: number;
+  presente: boolean;
+  observacao?: string;
+  obraId?: number;
+  nomeObra?: string;
+}

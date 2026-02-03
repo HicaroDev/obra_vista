@@ -8,6 +8,7 @@ import { Prestadores } from './pages/Prestadores';
 import { Equipes } from './pages/Equipes';
 import { Kanban } from './pages/Kanban';
 import { Relatorios } from './pages/Relatorios';
+import { Frequencia } from './pages/Frequencia';
 import { Usuarios } from './pages/Usuarios';
 import { Especialidades } from './pages/Especialidades';
 import { Produtos } from './pages/Produtos';
@@ -35,6 +36,7 @@ function App() {
           <Route path="/equipes" element={<Equipes />} />
           <Route path="/kanban" element={<Kanban />} />
           <Route path="/relatorios" element={<Relatorios />} />
+          <Route path="/frequencia" element={<Frequencia />} />
           <Route path="/usuarios" element={<Usuarios />} />
           <Route path="/especialidades" element={<Especialidades />} />
           <Route path="/produtos" element={<Produtos />} />

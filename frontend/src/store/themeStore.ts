@@ -8,55 +8,38 @@ interface ThemeState {
   toggleTheme: () => void;
 }
 
+// Theme Enforcement: ALWAYS LIGHT MODE
 const applyTheme = (theme: Theme) => {
   const root = window.document.documentElement;
-  
-  if (theme === 'system') {
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
-    root.classList.remove('light', 'dark');
-    root.classList.add(systemTheme);
-  } else {
-    root.classList.remove('light', 'dark');
-    root.classList.add(theme);
-  }
+  // Force removal of dark class ensuring Light Mode always
+  root.classList.remove('dark');
+  root.classList.add('light');
 };
 
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      theme: 'system',
+      theme: 'light', // Default to light
 
       setTheme: (theme: Theme) => {
-        applyTheme(theme);
-        set({ theme });
+        applyTheme('light'); // Ignore input, force light
+        set({ theme: 'light' });
       },
 
       toggleTheme: () => {
-        const currentTheme = get().theme;
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        applyTheme(newTheme);
-        set({ theme: newTheme });
+        // Disable toggle, ensure light
+        applyTheme('light');
+        set({ theme: 'light' });
       },
     }),
     {
       name: 'theme-storage',
       onRehydrateStorage: () => (state) => {
-        if (state) {
-          applyTheme(state.theme);
-        }
+        applyTheme('light'); // Force light on load
       },
     }
   )
 );
 
-// Listener para mudanças no tema do sistema
-if (typeof window !== 'undefined') {
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    const { theme, setTheme } = useThemeStore.getState();
-    if (theme === 'system') {
-      applyTheme('system');
-    }
-  });
-}
+// Remove system listener to prevent auto-dark mode
+// Logica de sistema removida propositalmente

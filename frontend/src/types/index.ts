@@ -55,6 +55,15 @@ export interface Prestador {
   pixTipo?: 'cpf' | 'telefone' | 'email' | 'chave_aleatoria' | 'cnpj';
   pixChave?: string;
   ativo: boolean;
+
+  // Contratação e Pagamento
+  tipoContrato?: 'diaria' | 'empreita' | 'clt';
+  valorDiaria?: number;
+  valorValeRefeicao?: number;
+  valorValeTransporte?: number;
+  salario?: number;
+  bonificacao?: number;
+
   createdAt: string;
   updatedAt: string;
 }

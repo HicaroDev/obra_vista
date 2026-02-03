@@ -24,7 +24,15 @@ router.get('/', async (req, res) => {
                 cpf, cnpj,
                 ativo,
                 "createdAt",
-                "updatedAt"
+                "updatedAt",
+                pix_tipo as "pixTipo",
+                pix_chave as "pixChave",
+                tipo_contrato as "tipoContrato",
+                valor_diaria::numeric as "valorDiaria",
+                valor_vale_refeicao::numeric as "valorValeRefeicao",
+                valor_vale_transporte::numeric as "valorValeTransporte",
+                salario::numeric,
+                bonificacao::numeric
             FROM prestadores 
             ORDER BY nome ASC
         `);
@@ -57,7 +65,15 @@ router.get('/:id', async (req, res) => {
                 cpf, cnpj,
                 ativo,
                 "createdAt",
-                "updatedAt"
+                "updatedAt",
+                pix_tipo as "pixTipo",
+                pix_chave as "pixChave",
+                tipo_contrato as "tipoContrato",
+                valor_diaria::numeric as "valorDiaria",
+                valor_vale_refeicao::numeric as "valorValeRefeicao",
+                valor_vale_transporte::numeric as "valorValeTransporte",
+                salario::numeric,
+                bonificacao::numeric
             FROM prestadores 
             WHERE id = $1
         `, [req.params.id]);
@@ -79,7 +95,10 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     const client = getDbClient();
     try {
-        const { nome, especialidade, telefone, email, tipoPessoa = 'PF', cpf, cnpj, ativo = true } = req.body;
+        const {
+            nome, especialidade, telefone, email, tipoPessoa = 'PF', cpf, cnpj, ativo = true,
+            pixTipo, pixChave, tipoContrato, valorDiaria, valorValeRefeicao, valorValeTransporte, salario, bonificacao
+        } = req.body;
 
         if (!nome || !especialidade) {
             return res.status(400).json({
@@ -105,16 +124,30 @@ router.post('/', async (req, res) => {
 
         await client.connect();
         const result = await client.query(`
-            INSERT INTO prestadores (nome, especialidade, telefone, email, tipo_pessoa, cpf, cnpj, ativo)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO prestadores (
+                nome, especialidade, telefone, email, tipo_pessoa, cpf, cnpj, ativo,
+                pix_tipo, pix_chave, tipo_contrato, valor_diaria, valor_vale_refeicao, valor_vale_transporte, salario, bonificacao
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
             RETURNING 
                 id, nome, especialidade, telefone, email,
                 tipo_pessoa as "tipoPessoa",
                 cpf, cnpj,
                 ativo,
                 "createdAt",
-                "updatedAt"
-        `, [nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo]);
+                "updatedAt",
+                pix_tipo as "pixTipo",
+                pix_chave as "pixChave",
+                tipo_contrato as "tipoContrato",
+                valor_diaria::numeric as "valorDiaria",
+                valor_vale_refeicao::numeric as "valorValeRefeicao",
+                valor_vale_transporte::numeric as "valorValeTransporte",
+                salario::numeric,
+                bonificacao::numeric
+        `, [
+            nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo,
+            pixTipo, pixChave, tipoContrato, valorDiaria, valorValeRefeicao, valorValeTransporte, salario, bonificacao
+        ]);
 
         res.status(201).json({
             success: true,
@@ -143,7 +176,10 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const client = getDbClient();
     try {
-        const { nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo } = req.body;
+        const {
+            nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo,
+            pixTipo, pixChave, tipoContrato, valorDiaria, valorValeRefeicao, valorValeTransporte, salario, bonificacao
+        } = req.body;
 
         await client.connect();
         const result = await client.query(`
@@ -157,16 +193,36 @@ router.put('/:id', async (req, res) => {
                 cpf = COALESCE($6, cpf),
                 cnpj = COALESCE($7, cnpj),
                 ativo = COALESCE($8, ativo),
+                pix_tipo = COALESCE($9, pix_tipo),
+                pix_chave = COALESCE($10, pix_chave),
+                tipo_contrato = COALESCE($11, tipo_contrato),
+                valor_diaria = COALESCE($12, valor_diaria),
+                valor_vale_refeicao = COALESCE($13, valor_vale_refeicao),
+                valor_vale_transporte = COALESCE($14, valor_vale_transporte),
+                salario = COALESCE($15, salario),
+                bonificacao = COALESCE($16, bonificacao),
                 "updatedAt" = CURRENT_TIMESTAMP
-            WHERE id = $9
+            WHERE id = $17
             RETURNING 
                 id, nome, especialidade, telefone, email,
                 tipo_pessoa as "tipoPessoa",
                 cpf, cnpj,
                 ativo,
                 "createdAt",
-                "updatedAt"
-        `, [nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo, req.params.id]);
+                "updatedAt",
+                pix_tipo as "pixTipo",
+                pix_chave as "pixChave",
+                tipo_contrato as "tipoContrato",
+                valor_diaria::numeric as "valorDiaria",
+                valor_vale_refeicao::numeric as "valorValeRefeicao",
+                valor_vale_transporte::numeric as "valorValeTransporte",
+                salario::numeric,
+                bonificacao::numeric
+        `, [
+            nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo,
+            pixTipo, pixChave, tipoContrato, valorDiaria, valorValeRefeicao, valorValeTransporte, salario, bonificacao,
+            req.params.id
+        ]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Prestador não encontrado' });

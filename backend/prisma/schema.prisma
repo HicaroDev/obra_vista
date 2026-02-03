@@ -43,8 +43,20 @@ model Prestadores {
   ativo         Boolean           @default(true)
   createdAt     DateTime          @default(now()) @db.Timestamp(6)
   updatedAt     DateTime          @default(now()) @updatedAt @db.Timestamp(6)
-  tipo_pessoa   String?           @default("PF") @db.VarChar(2)
-  cnpj          String?           @unique @db.VarChar(18)
+  tipo_pessoa     String?         @default("PF") @db.VarChar(2)
+  cnpj            String?         @unique @db.VarChar(18)
+  
+  // Dados de Pagamento / Pix
+  pix_tipo        String?         @db.VarChar(20)
+  pix_chave       String?         @db.VarChar(100)
+  
+  // Dados de Contratação
+  tipo_contrato         String?   @default("diaria") @db.VarChar(20) // diaria, empreita, clt
+  valor_diaria          Decimal?  @db.Decimal(10, 2)
+  valor_vale_refeicao   Decimal?  @db.Decimal(10, 2)
+  valor_vale_transporte Decimal?  @db.Decimal(10, 2)
+  salario               Decimal?  @db.Decimal(10, 2)
+  bonificacao           Decimal?  @db.Decimal(10, 2)
   atribuicoes   Atribuicoes[]
   equipes       Equipes_Membros[]
 

@@ -2,12 +2,11 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  PiList, PiX, PiSun, PiMoon, PiSignOut,
+  PiList, PiX, PiSignOut,
   PiHouse, PiUsersThree, PiBuildings, PiKanban,
   PiBriefcase, PiFileText, PiUserGear, PiGear,
   PiCaretDown, PiCaretRight, PiFolderPlus, PiPackage, PiScales
 } from 'react-icons/pi';
-import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
 import { canAccessPage } from '../lib/permissions';
 import { cn } from '../utils/cn';
@@ -18,7 +17,6 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
-  const { theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
   const location = useLocation();
 
@@ -52,7 +50,6 @@ export function Layout({ children }: LayoutProps) {
     { name: 'Usuários', href: '/usuarios', icon: PiUserGear, page: 'usuarios' },
   ];
 
-  // Filtrar navegação recursivamente
   const filterNavigation = (items: NavigationItem[]): NavigationItem[] => {
     return items.reduce((acc: NavigationItem[], item) => {
       if (item.children) {
@@ -80,42 +77,48 @@ export function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Topbar */}
-      <header className="fixed top-0 left-0 right-0 h-14 bg-background border-b border-border z-50 shadow-sm">
-        <div className="h-full px-4 flex items-center justify-between">
+    <div className="min-h-screen relative overflow-hidden bg-background selection:bg-primary/20">
+      {/* Background - Light Mode Clean */}
+      <div className="fixed inset-0 -z-10 h-full w-full bg-gray-50">
+        <div className="absolute top-[-10%] right-[-5%] h-[500px] w-[500px] rounded-full bg-blue-400/20 blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] left-[-5%] h-[500px] w-[500px] rounded-full bg-purple-400/20 blur-[120px]" />
+      </div>
+
+      {/* Topbar Light */}
+      <header className="fixed top-0 left-0 right-0 h-16 z-50 transition-all duration-300">
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-sm" />
+
+        <div className="relative h-full px-4 lg:px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 hover:bg-accent rounded-lg transition-colors"
+              className="p-2 hover:bg-black/5 rounded-xl transition-colors lg:hidden text-foreground"
             >
-              {sidebarOpen ? <PiX size={20} /> : <PiList size={20} />}
+              {sidebarOpen ? <PiX size={22} /> : <PiList size={22} />}
             </button>
-            <Link to="/" className="flex items-center gap-2">
-              <img src="/logo.png" alt="Obra Vista" className="h-8 w-auto object-contain" />
-              <h1 className="text-lg md:text-xl font-bold text-primary block">Obra Vista</h1>
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="relative">
+                <img src="/logo.png" alt="Obra Vista" className="relative h-9 w-auto object-contain drop-shadow-sm" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900 hidden sm:block">
+                Obra Vista
+              </h1>
             </Link>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="p-2 hover:bg-accent rounded-lg transition-colors"
-              title={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
-            >
-              {theme === 'dark' ? <PiSun size={20} /> : <PiMoon size={20} />}
-            </button>
-
-            <div className="flex items-center gap-2 px-2 md:px-3 py-1.5 bg-accent rounded-lg">
-              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
-                {user?.nome.charAt(0).toUpperCase()}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 pl-3 pr-1 py-1 bg-white/50 backdrop-blur-md rounded-full border border-white/20 shadow-sm">
+              <span className="text-sm font-medium hidden md:block pl-1 text-gray-700">
+                {user?.nome}
+              </span>
+              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                {user?.nome?.charAt(0).toUpperCase()}
               </div>
-              <span className="text-sm font-medium hidden md:block">{user?.nome}</span>
             </div>
 
             <button
               onClick={logout}
-              className="p-2 hover:bg-destructive/10 text-destructive rounded-lg transition-colors"
+              className="p-2.5 hover:bg-red-50 hover:text-red-500 text-muted-foreground rounded-xl transition-all"
               title="Sair"
             >
               <PiSignOut size={20} />
@@ -124,34 +127,36 @@ export function Layout({ children }: LayoutProps) {
         </div>
       </header>
 
-      {/* Overlay para mobile quando sidebar está aberto */}
+      {/* Overlay mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Light Mode Only */}
       <aside
         className={cn(
-          'fixed left-0 top-0 lg:top-14 bottom-0 bg-background border-r border-border transition-all duration-300 z-[60] lg:z-40',
-          'w-64 shadow-2xl lg:shadow-none',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          'fixed z-[60] lg:z-40 transition-all duration-300 ease-out',
+          'inset-y-0 left-0 w-[280px] lg:w-64',
+          'lg:top-20 lg:bottom-4 lg:left-4 lg:rounded-2xl',
+          'bg-white/80 backdrop-blur-2xl',
+          'border border-white/20 shadow-2xl lg:shadow-xl',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-[80px] xl:w-64'
         )}
       >
-        <div className="lg:hidden flex items-center justify-between p-4 border-b border-border">
-          <span className="font-bold text-lg">Menu</span>
-          <button onClick={() => setSidebarOpen(false)} className="p-2 hover:bg-accent rounded-lg">
+        <div className="lg:hidden flex items-center justify-between p-5 border-b border-border/50">
+          <span className="font-bold text-lg text-primary">Menu</span>
+          <button onClick={() => setSidebarOpen(false)} className="p-2 hover:bg-black/5 rounded-xl text-foreground">
             <PiX size={20} />
           </button>
         </div>
 
-        <nav className="p-4 space-y-2 overflow-y-auto max-h-[calc(100vh-80px)] lg:max-h-none">
+        <nav className="p-3 lg:p-4 space-y-1.5 overflow-y-auto h-full scrollbar-hide py-4">
           {navigation.map((item) => {
             const Icon = item.icon;
 
-            // Renderização de Item com Submenu
             if (item.children) {
               const isOpen = openMenus.includes(item.name);
               const isActiveParent = item.children.some(child => child.href === location.pathname);
@@ -161,19 +166,28 @@ export function Layout({ children }: LayoutProps) {
                   <button
                     onClick={() => toggleMenu(item.name)}
                     className={cn(
-                      'w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors group',
-                      isActiveParent ? 'bg-accent/50 text-foreground' : 'hover:bg-accent text-muted-foreground hover:text-foreground'
+                      'w-full flex items-center justify-between px-3 py-3 lg:py-2.5 rounded-xl transition-all duration-200 group',
+                      'font-medium text-sm',
+                      isActiveParent
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'text-gray-600 hover:bg-black/5 hover:text-gray-900'
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon size={20} className={isActiveParent ? 'text-primary' : 'group-hover:text-primary'} />
-                      <span className="font-medium">{item.name}</span>
+                      <div className={cn(
+                        "p-1.5 rounded-lg transition-colors",
+                        isActiveParent ? "bg-white text-blue-600" : ""
+                      )}>
+                        <Icon size={20} />
+                      </div>
+                      <span>{item.name}</span>
                     </div>
-                    {isOpen ? <PiCaretDown size={16} /> : <PiCaretRight size={16} />}
+                    {isOpen ? <PiCaretDown size={14} className="opacity-70" /> : <PiCaretRight size={14} className="opacity-70" />}
                   </button>
 
                   {isOpen && (
-                    <div className="pl-4 space-y-1 border-l-2 border-border ml-4">
+                    <div className="pl-4 space-y-1 relative ml-3">
+                      <div className="absolute left-0 top-2 bottom-2 w-px bg-gray-200" />
                       {item.children.map((child) => {
                         const ChildIcon = child.icon;
                         const isChildActive = location.pathname === child.href;
@@ -185,13 +199,13 @@ export function Layout({ children }: LayoutProps) {
                               if (window.innerWidth < 1024) setSidebarOpen(false);
                             }}
                             className={cn(
-                              'flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-sm',
+                              'flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-sm ml-2',
                               isChildActive
-                                ? 'bg-primary/10 text-primary font-medium'
-                                : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                                ? 'text-blue-600 font-semibold'
+                                : 'text-gray-500 hover:text-gray-900'
                             )}
                           >
-                            <ChildIcon size={18} />
+                            <ChildIcon size={16} className={isChildActive ? "text-blue-600" : "opacity-70"} />
                             <span>{child.name}</span>
                           </Link>
                         );
@@ -202,47 +216,55 @@ export function Layout({ children }: LayoutProps) {
               );
             }
 
-            // Renderização de Item Simples
             const isActive = location.pathname === item.href;
             return (
               <Link
                 key={item.name}
                 to={item.href!}
                 onClick={() => {
-                  // Fecha sidebar em mobile ao clicar em um link
-                  if (window.innerWidth < 1024) {
-                    setSidebarOpen(false);
-                  }
+                  if (window.innerWidth < 1024) setSidebarOpen(false);
                 }}
                 className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group',
+                  'flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl transition-all duration-200 group relative overflow-hidden',
+                  'font-medium text-sm',
                   isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-accent'
+                    ? 'bg-gradient-to-r from-primary to-blue-600 text-[#0e0000] shadow-lg shadow-blue-500/25' // Blue Gradient + Black Text (#0e0000)
+                    : 'text-gray-600 hover:bg-black/5 hover:text-gray-900'
                 )}
               >
-                <Icon size={20} className={isActive ? '' : 'text-muted-foreground group-hover:text-primary'} />
-                <span className="font-medium">{item.name}</span>
+                <div className={cn(
+                  "p-1.5 rounded-lg transition-colors z-10",
+                  isActive ? "bg-white/20 text-[#0e0000]" : "" // Icon Dark
+                )}>
+                  <Icon size={20} />
+                </div>
+                <span className="z-10 font-bold">{item.name}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="absolute bottom-4 left-4 right-4 p-4 bg-accent rounded-lg">
-          <p className="text-xs text-muted-foreground">
-            Logado como <span className="font-semibold text-foreground">{user?.tipo}</span>
+        {/* Footer User Info */}
+        <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl bg-gray-50 border border-border">
+          <p className="text-xs text-muted-foreground text-center">
+            Perfil: <span className="font-bold text-primary">{user?.tipo}</span>
+          </p>
+          <p className="text-[10px] text-gray-400 text-center mt-1">
+            v2.0
           </p>
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <main
         className={cn(
-          'pt-14 transition-all duration-300 min-h-screen',
-          'lg:ml-64' // Sempre com margem em desktop
+          'pt-20 px-4 pb-8 transition-all duration-300 min-h-screen',
+          'lg:ml-[280px] lg:mr-4'
         )}
       >
-        {children}
+        <div className="max-w-[1600px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+          {children}
+        </div>
       </main>
     </div>
   );

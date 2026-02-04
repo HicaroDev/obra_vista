@@ -173,14 +173,14 @@ export function Prestadores() {
             pixTipo: prestador.pixTipo || '',
             pixChave: prestador.pixChave || '',
             tipoContrato: prestador.tipoContrato || 'diaria',
-            valorDiaria: prestador.valorDiaria ? prestador.valorDiaria.toString() : '',
-            valorValeRefeicao: prestador.valorValeRefeicao ? prestador.valorValeRefeicao.toString() : '',
-            valorValeTransporte: prestador.valorValeTransporte ? prestador.valorValeTransporte.toString() : '',
-            salario: prestador.salario ? prestador.salario.toString() : '',
-            bonificacao: prestador.bonificacao ? prestador.bonificacao.toString() : '',
+            valorDiaria: prestador.valorDiaria ? maskCurrency(prestador.valorDiaria.toString()) : '',
+            valorValeRefeicao: prestador.valorValeRefeicao ? maskCurrency(prestador.valorValeRefeicao.toString()) : '',
+            valorValeTransporte: prestador.valorValeTransporte ? maskCurrency(prestador.valorValeTransporte.toString()) : '',
+            salario: prestador.salario ? maskCurrency(prestador.salario.toString()) : '',
+            bonificacao: prestador.bonificacao ? maskCurrency(prestador.bonificacao.toString()) : '',
             diaPagamento: prestador.diaPagamento ? prestador.diaPagamento.toString() : '5',
             diaVale: prestador.diaVale ? prestador.diaVale.toString() : '20',
-            valorAdiantamento: prestador.valorAdiantamento ? prestador.valorAdiantamento.toString() : '',
+            valorAdiantamento: prestador.valorAdiantamento ? maskCurrency(prestador.valorAdiantamento.toString()) : '',
         });
         setActiveTab('geral');
         setShowModal(true);
@@ -199,7 +199,7 @@ export function Prestadores() {
 
     const handleMoneyInput = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
         let value = e.target.value;
-        setFormData({ ...formData, [field]: value });
+        setFormData({ ...formData, [field]: maskCurrency(value) });
     };
 
     const formatCPF = (cpf: string) => cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -492,15 +492,15 @@ export function Prestadores() {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in">
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Valor da Diária (R$)</label>
-                                                    <input type="number" step="0.01" value={formData.valorDiaria} onChange={e => handleMoneyInput(e, 'valorDiaria')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="0,00" />
+                                                    <input type="text" value={formData.valorDiaria} onChange={e => handleMoneyInput(e, 'valorDiaria')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="R$ 0,00" />
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Vale Refeição / Alimentação (R$)</label>
-                                                    <input type="number" step="0.01" value={formData.valorValeRefeicao} onChange={e => handleMoneyInput(e, 'valorValeRefeicao')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="0,00" />
+                                                    <input type="text" value={formData.valorValeRefeicao} onChange={e => handleMoneyInput(e, 'valorValeRefeicao')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="R$ 0,00" />
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Vale Transporte (R$)</label>
-                                                    <input type="number" step="0.01" value={formData.valorValeTransporte} onChange={e => handleMoneyInput(e, 'valorValeTransporte')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="0,00" />
+                                                    <input type="text" value={formData.valorValeTransporte} onChange={e => handleMoneyInput(e, 'valorValeTransporte')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="R$ 0,00" />
                                                 </div>
                                             </div>
                                         )}
@@ -515,19 +515,19 @@ export function Prestadores() {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in">
                                                 <div className="md:col-span-2">
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Salário Base (R$)</label>
-                                                    <input type="number" step="0.01" value={formData.salario} onChange={e => handleMoneyInput(e, 'salario')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none font-semibold text-lg" placeholder="0,00" />
+                                                    <input type="text" value={formData.salario} onChange={e => handleMoneyInput(e, 'salario')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none font-semibold text-lg" placeholder="R$ 0,00" />
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Vale Refeição (R$)</label>
-                                                    <input type="number" step="0.01" value={formData.valorValeRefeicao} onChange={e => handleMoneyInput(e, 'valorValeRefeicao')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="0,00" />
+                                                    <input type="text" value={formData.valorValeRefeicao} onChange={e => handleMoneyInput(e, 'valorValeRefeicao')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="R$ 0,00" />
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Vale Transporte (R$)</label>
-                                                    <input type="number" step="0.01" value={formData.valorValeTransporte} onChange={e => handleMoneyInput(e, 'valorValeTransporte')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="0,00" />
+                                                    <input type="text" value={formData.valorValeTransporte} onChange={e => handleMoneyInput(e, 'valorValeTransporte')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="R$ 0,00" />
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs font-medium text-gray-500 mb-1">Bonificação Mensal (R$)</label>
-                                                    <input type="number" step="0.01" value={formData.bonificacao} onChange={e => handleMoneyInput(e, 'bonificacao')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="0,00" />
+                                                    <input type="text" value={formData.bonificacao} onChange={e => handleMoneyInput(e, 'bonificacao')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="R$ 0,00" />
                                                 </div>
 
                                                 <div className="md:col-span-2 border-t pt-4 mt-2">
@@ -543,7 +543,7 @@ export function Prestadores() {
                                                         </div>
                                                         <div>
                                                             <label className="block text-xs font-medium text-gray-500 mb-1">Valor do Vale (R$)</label>
-                                                            <input type="number" step="0.01" value={formData.valorAdiantamento} onChange={e => handleMoneyInput(e, 'valorAdiantamento')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="0,00" />
+                                                            <input type="text" value={formData.valorAdiantamento} onChange={e => handleMoneyInput(e, 'valorAdiantamento')} className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-blue-600 outline-none" placeholder="R$ 0,00" />
                                                         </div>
                                                     </div>
                                                 </div>

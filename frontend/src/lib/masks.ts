@@ -28,6 +28,24 @@ export const maskPhone = (value: string): string => {
         .replace(/(-\d{4})\d+?$/, '$1');
 };
 
+// Função para aplicar máscara de moeda (R$)
+export const maskCurrency = (value: string): string => {
+    // Remove tudo que não é dígito
+    const numericValue = value.replace(/\D/g, '');
+
+    // Se não tiver valor, retorn vazio
+    if (!numericValue) return '';
+
+    // Converte para número e divide por 100 para ter centavos
+    const amount = parseInt(numericValue) / 100;
+
+    // Formata usando Intl
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(amount);
+};
+
 // Função para remover máscara
 export const removeMask = (value: string): string => {
     return value.replace(/\D/g, '');

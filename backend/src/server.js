@@ -30,8 +30,26 @@ const app = express();
 // ==================== MIDDLEWARES ====================
 
 // CORS - Permitir requisições do frontend
+// CORS - Permitir requisições do frontend
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // Permitir requisições server-side/postman
+
+    // Em desenvolvimento, aceita qualquer localhost
+    if (origin.includes('localhost') || origin.includes('127.0.0.1') || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Bloqueado pelo CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
 };

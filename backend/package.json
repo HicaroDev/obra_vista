@@ -12,7 +12,8 @@
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "prisma:seed": "node prisma/seed.js",
-    "prisma:reset": "prisma migrate reset"
+    "prisma:reset": "prisma migrate reset",
+    "backup": "node scripts/backup.js"
   },
   "keywords": [
     "obra",
@@ -33,10 +34,15 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
+    "pdf-parse": "^2.4.5",
     "pg": "^8.17.2",
     "prisma": "^5.8.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

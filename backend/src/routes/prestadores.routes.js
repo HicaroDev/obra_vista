@@ -32,7 +32,8 @@ router.get('/', async (req, res) => {
                 valor_vale_refeicao::numeric as "valorValeRefeicao",
                 valor_vale_transporte::numeric as "valorValeTransporte",
                 salario::numeric,
-                bonificacao::numeric
+                bonificacao::numeric,
+                usa_folha_ponto as "usaFolhaPonto"
             FROM prestadores 
             ORDER BY nome ASC
         `);
@@ -73,7 +74,8 @@ router.get('/:id', async (req, res) => {
                 valor_vale_refeicao::numeric as "valorValeRefeicao",
                 valor_vale_transporte::numeric as "valorValeTransporte",
                 salario::numeric,
-                bonificacao::numeric
+                bonificacao::numeric,
+                usa_folha_ponto as "usaFolhaPonto"
             FROM prestadores 
             WHERE id = $1
         `, [req.params.id]);
@@ -107,7 +109,8 @@ router.post('/', async (req, res) => {
             salario, bonificacao,
             diaPagamento, dia_pagamento,
             diaVale, dia_vale,
-            valorAdiantamento, valor_adiantamento
+            valorAdiantamento, valor_adiantamento,
+            usaFolhaPonto, usa_folha_ponto
         } = req.body;
 
         // Normalização de campos (snake_case ou camelCase)
@@ -147,9 +150,9 @@ router.post('/', async (req, res) => {
             INSERT INTO prestadores (
                 nome, especialidade, telefone, email, tipo_pessoa, cpf, cnpj, ativo,
                 pix_tipo, pix_chave, tipo_contrato, valor_diaria, valor_vale_refeicao, valor_vale_transporte, salario, bonificacao,
-                dia_pagamento, dia_vale, valor_adiantamento
+                dia_pagamento, dia_vale, valor_adiantamento, usa_folha_ponto
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
             RETURNING 
                 id, nome, especialidade, telefone, email,
                 tipo_pessoa as "tipoPessoa",
@@ -167,13 +170,15 @@ router.post('/', async (req, res) => {
                 bonificacao::numeric,
                 dia_pagamento as "diaPagamento",
                 dia_vale as "diaVale",
-                valor_adiantamento::numeric as "valorAdiantamento"
+                valor_adiantamento::numeric as "valorAdiantamento",
+                usa_folha_ponto as "usaFolhaPonto"
         `, [
             nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo,
             pixTipo || null, pixChave || null, _tipoContrato,
             _valorDiaria || null, _valorVR || null, _valorVT || null,
             salario || null, bonificacao || null,
-            _diaPagamento || null, _diaVale || null, _valorAdiantamento || null
+            _diaPagamento || null, _diaVale || null, _valorAdiantamento || null,
+            usaFolhaPonto !== undefined ? usaFolhaPonto : (usa_folha_ponto !== undefined ? usa_folha_ponto : true)
         ]);
 
 
@@ -214,7 +219,8 @@ router.put('/:id', async (req, res) => {
             // Novos campos CLT
             diaPagamento, dia_pagamento,
             diaVale, dia_vale,
-            valorAdiantamento, valor_adiantamento
+            valorAdiantamento, valor_adiantamento,
+            usaFolhaPonto, usa_folha_ponto
         } = req.body;
 
         const _tipoContrato = tipoContrato || tipo_contrato;
@@ -249,8 +255,9 @@ router.put('/:id', async (req, res) => {
                 dia_pagamento = COALESCE($17, dia_pagamento),
                 dia_vale = COALESCE($18, dia_vale),
                 valor_adiantamento = COALESCE($19, valor_adiantamento),
+                usa_folha_ponto = COALESCE($20, usa_folha_ponto),
                 "updatedAt" = CURRENT_TIMESTAMP
-            WHERE id = $20
+            WHERE id = $21
             RETURNING 
                 id, nome, especialidade, telefone, email,
                 tipo_pessoa as "tipoPessoa",
@@ -268,13 +275,15 @@ router.put('/:id', async (req, res) => {
                 bonificacao::numeric,
                 dia_pagamento as "diaPagamento",
                 dia_vale as "diaVale",
-                valor_adiantamento::numeric as "valorAdiantamento"
+                valor_adiantamento::numeric as "valorAdiantamento",
+                usa_folha_ponto as "usaFolhaPonto"
         `, [
             nome, especialidade, telefone, email, tipoPessoa, cpf, cnpj, ativo,
             pixTipo || null, pixChave || null, _tipoContrato || null,
             _valorDiaria || null, _valorVR || null, _valorVT || null,
             salario || null, bonificacao || null,
             _diaPagamento || null, _diaVale || null, _valorAdiantamento || null,
+            usaFolhaPonto !== undefined ? usaFolhaPonto : (usa_folha_ponto !== undefined ? usa_folha_ponto : null),
             req.params.id
         ]);
 

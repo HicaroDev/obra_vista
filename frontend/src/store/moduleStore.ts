@@ -11,7 +11,7 @@ interface ModuleState {
 export const useModuleStore = create<ModuleState>()(
     persist(
         (set) => ({
-            activeModule: 'OPERATIONAL', // Default para não quebrar fluxo atual
+            activeModule: null, // Default é null para forçar a seleção
             setModule: (module) => set({ activeModule: module }),
         }),
         {

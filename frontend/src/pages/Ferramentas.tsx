@@ -23,6 +23,7 @@ export function Ferramentas() {
     // const { user } = useAuthStore();
     const [ferramentas, setFerramentas] = useState<Ferramenta[]>([]);
     const [loading, setLoading] = useState(true);
+    const [processing, setProcessing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [stats, setStats] = useState({ total: 0, disponiveis: 0, em_uso: 0, manutencao: 0 });
 
@@ -86,6 +87,7 @@ export function Ferramentas() {
     // --- CADASTRO ---
     const handleSaveCadastro = async (e: React.FormEvent) => {
         e.preventDefault();
+        setProcessing(true);
         try {
             if (selectedFerramenta) {
                 await ferramentasApi.update(selectedFerramenta.id, formCadastro as any);
@@ -98,6 +100,8 @@ export function Ferramentas() {
             loadData();
         } catch (error) {
             alert('Erro ao salvar');
+        } finally {
+            setProcessing(false);
         }
     };
 
@@ -122,6 +126,7 @@ export function Ferramentas() {
     const handleSaveMovimentacao = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedFerramenta) return;
+        setProcessing(true);
 
         try {
             await ferramentasApi.registrarMovimentacao({
@@ -136,6 +141,8 @@ export function Ferramentas() {
             alert('Movimentação registrada!');
         } catch (error) {
             alert('Erro ao registrar movimentação');
+        } finally {
+            setProcessing(false);
         }
     };
 
@@ -347,7 +354,9 @@ export function Ferramentas() {
                                     <option value="extraviada">Extraviada</option>
                                 </select>
                             </div>
-                            <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium mt-2">Salvar</button>
+                            <button disabled={processing} type="submit" className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium mt-2 disabled:bg-blue-400 disabled:cursor-not-allowed">
+                                {processing ? 'Salvando...' : 'Salvar'}
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -435,15 +444,18 @@ export function Ferramentas() {
 
                             <button
                                 type="submit"
+                                disabled={processing}
                                 className={cn(
-                                    "w-full text-white py-3 rounded-xl font-medium mt-2 transition-colors",
+                                    "w-full text-white py-3 rounded-xl font-medium mt-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
                                     formMovimentacao.acao === 'transferencia' ? "bg-orange-600 hover:bg-orange-700" :
                                         formMovimentacao.acao === 'devolucao' ? "bg-green-600 hover:bg-green-700" :
                                             "bg-blue-600 hover:bg-blue-700"
                                 )}
                             >
-                                {formMovimentacao.acao === 'transferencia' ? 'Confirmar Transferência' :
-                                    formMovimentacao.acao === 'devolucao' ? 'Confirmar Devolução' : 'Confirmar Saída'}
+                                {processing ? 'Processando...' :
+                                    (formMovimentacao.acao === 'transferencia' ? 'Confirmar Transferência' :
+                                        formMovimentacao.acao === 'devolucao' ? 'Confirmar Devolução' : 'Confirmar Saída')
+                                }
                             </button>
                         </form>
                     </div>

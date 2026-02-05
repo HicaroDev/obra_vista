@@ -20,7 +20,9 @@ export function Obras() {
     const { user } = useAuthStore();
     const [obras, setObras] = useState<Obra[]>([]);
     const [loading, setLoading] = useState(true);
+    const [processing, setProcessing] = useState(false); // Novo estado
     const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState<'todos' | 'em_andamento' | 'pausado' | 'concluido'>('todos');
     const [showModal, setShowModal] = useState(false);
     const [editingObra, setEditingObra] = useState<Obra | null>(null);
     const [formData, setFormData] = useState({
@@ -55,6 +57,7 @@ export function Obras() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setProcessing(true); // Bloqueia
 
         try {
             const data = {
@@ -74,6 +77,8 @@ export function Obras() {
             handleCloseModal();
         } catch (error) {
             console.error('Erro ao salvar obra:', error);
+        } finally {
+            setProcessing(false); // Libera
         }
     };
 
@@ -121,8 +126,9 @@ export function Obras() {
     };
 
     const filteredObras = obras.filter(obra =>
-        obra.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        obra.endereco.toLowerCase().includes(searchTerm.toLowerCase())
+        (statusFilter === 'todos' || obra.status === statusFilter) &&
+        (obra.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            obra.endereco.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const getStatusColor = (status: string) => {
@@ -154,9 +160,50 @@ export function Obras() {
     return (
         <div className="p-6">
             {/* Header */}
-            <div className="mb-6">
-                <h1 className="text-3xl font-medium text-foreground mb-2">Obras</h1>
-                <p className="text-muted-foreground">Gerencie todas as obras do sistema</p>
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-3xl font-medium text-foreground mb-2">Obras</h1>
+                    <p className="text-muted-foreground">Gerencie todas as obras do sistema</p>
+                </div>
+
+                <div className="flex bg-muted p-1 rounded-lg self-start lg:self-auto">
+                    <button
+                        onClick={() => setStatusFilter('todos')}
+                        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${statusFilter === 'todos'
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                    >
+                        Todas
+                    </button>
+                    <button
+                        onClick={() => setStatusFilter('em_andamento')}
+                        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${statusFilter === 'em_andamento'
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                    >
+                        Em Andamento
+                    </button>
+                    <button
+                        onClick={() => setStatusFilter('pausado')}
+                        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${statusFilter === 'pausado'
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                    >
+                        Paradas
+                    </button>
+                    <button
+                        onClick={() => setStatusFilter('concluido')}
+                        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${statusFilter === 'concluido'
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                    >
+                        Concluídas
+                    </button>
+                </div>
             </div>
 
             {/* Actions Bar */}
@@ -191,7 +238,7 @@ export function Obras() {
 
             {/* Obras Grid */}
             {!loading && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredObras.map((obra) => (
                         <div
                             key={obra.id}
@@ -424,16 +471,18 @@ export function Obras() {
                             <div className="flex gap-3 pt-4">
                                 <button
                                     type="button"
+                                    disabled={processing}
                                     onClick={handleCloseModal}
-                                    className="flex-1 px-4 py-2 bg-accent hover:bg-accent/80 text-foreground rounded-lg transition-colors"
+                                    className="flex-1 px-4 py-2 bg-accent hover:bg-accent/80 text-foreground rounded-lg transition-colors disabled:opacity-50"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                                    disabled={processing}
+                                    className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {editingObra ? 'Salvar Alterações' : 'Criar Obra'}
+                                    {processing ? 'Salvando...' : (editingObra ? 'Salvar Alterações' : 'Criar Obra')}
                                 </button>
                             </div>
                         </form>

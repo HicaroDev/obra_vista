@@ -32,6 +32,7 @@ export function Prestadores() {
     const { user } = useAuthStore();
     const [prestadores, setPrestadores] = useState<Prestador[]>([]);
     const [loading, setLoading] = useState(true);
+    const [processing, setProcessing] = useState(false); // Novo estado
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingPrestador, setEditingPrestador] = useState<Prestador | null>(null);
@@ -60,7 +61,8 @@ export function Prestadores() {
         bonificacao: '',
         diaPagamento: '5',
         diaVale: '20',
-        valorAdiantamento: ''
+        valorAdiantamento: '',
+        usaFolhaPonto: true // Novo campo
     });
 
     useEffect(() => {
@@ -91,6 +93,7 @@ export function Prestadores() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setProcessing(true); // Bloqueia
 
         // Validações básicas
         if (!formData.nome.trim()) return alert('❌ Preencha o Nome Completo');
@@ -129,7 +132,8 @@ export function Prestadores() {
                 bonificacao: parseMoney(formData.bonificacao),
                 diaPagamento: parseInt(formData.diaPagamento) || 5,
                 diaVale: parseInt(formData.diaVale) || 20,
-                valorAdiantamento: parseMoney(formData.valorAdiantamento)
+                valorAdiantamento: parseMoney(formData.valorAdiantamento),
+                usaFolhaPonto: formData.usaFolhaPonto // Envia para API
             };
 
             if (editingPrestador) {
@@ -146,6 +150,8 @@ export function Prestadores() {
         } catch (error: any) {
             console.error('Erro ao salvar:', error);
             alert(`❌ Erro ao salvar: ${error.message}`);
+        } finally {
+            setProcessing(false); // Libera
         }
     };
 
@@ -181,6 +187,7 @@ export function Prestadores() {
             diaPagamento: prestador.diaPagamento ? prestador.diaPagamento.toString() : '5',
             diaVale: prestador.diaVale ? prestador.diaVale.toString() : '20',
             valorAdiantamento: prestador.valorAdiantamento ? maskCurrency(prestador.valorAdiantamento.toString()) : '',
+            usaFolhaPonto: prestador.usaFolhaPonto !== undefined ? prestador.usaFolhaPonto : true,
         });
         setActiveTab('geral');
         setShowModal(true);
@@ -193,7 +200,7 @@ export function Prestadores() {
         setFormData({
             nome: '', especialidade: '', telefone: '', email: '', tipoPessoa: 'PF', cpf: '', cnpj: '', ativo: true,
             pixTipo: '', pixChave: '', tipoContrato: 'diaria', valorDiaria: '', valorValeRefeicao: '', valorValeTransporte: '', salario: '', bonificacao: '',
-            diaPagamento: '5', diaVale: '20', valorAdiantamento: ''
+            diaPagamento: '5', diaVale: '20', valorAdiantamento: '', usaFolhaPonto: true
         });
     };
 
@@ -547,6 +554,22 @@ export function Prestadores() {
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <div className="md:col-span-2 border-t pt-4 mt-2">
+                                                    <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-200">
+                                                        <input
+                                                            type="checkbox"
+                                                            id="usaFolhaPonto"
+                                                            checked={formData.usaFolhaPonto}
+                                                            onChange={e => setFormData({ ...formData, usaFolhaPonto: e.target.checked })}
+                                                            className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-600 cursor-pointer"
+                                                        />
+                                                        <div>
+                                                            <label htmlFor="usaFolhaPonto" className="text-sm font-medium text-gray-900 cursor-pointer">Ativar Folha de Ponto</label>
+                                                            <p className="text-xs text-gray-500">Se desmarcado, este prestador não aparecerá na lista de frequência diária.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -556,9 +579,9 @@ export function Prestadores() {
                         </form>
 
                         <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex gap-4">
-                            <button onClick={handleCloseModal} className="flex-1 py-3 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors border border-transparent">Cancelar</button>
-                            <button onClick={handleSubmit} disabled={loading} className="flex-1 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-shadow shadow-lg shadow-blue-500/20 disabled:opacity-50">
-                                {loading ? 'Salvando...' : (editingPrestador ? 'Salvar Tudo' : 'Cadastrar Prestador')}
+                            <button onClick={handleCloseModal} disabled={processing} className="flex-1 py-3 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors border border-transparent disabled:opacity-50">Cancelar</button>
+                            <button onClick={handleSubmit} disabled={processing} className="flex-1 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-shadow shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
+                                {processing ? 'Salvando...' : (editingPrestador ? 'Salvar Tudo' : 'Cadastrar Prestador')}
                             </button>
                         </div>
                     </div>

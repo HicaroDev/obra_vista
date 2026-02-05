@@ -7,21 +7,22 @@ async function main() {
   console.log('🌱 Iniciando seed do banco de dados...\n');
 
   // Limpar dados existentes (cuidado em produção!)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🗑️  Limpando dados existentes...');
-    await prisma.logs.deleteMany();
-    await prisma.atribuicoes.deleteMany();
-    await prisma.equipes_Membros.deleteMany();
-    await prisma.equipes.deleteMany();
-    await prisma.obras.deleteMany();
-    await prisma.prestadores.deleteMany();
-    await prisma.usuarios.deleteMany();
-    console.log('✅ Dados limpos!\n');
-  }
+  // Limpar dados existentes (DESATIVADO PARA PROTEÇÃO DE DADOS)
+  // if (process.env.NODE_ENV === 'development') {
+  //   console.log('🗑️  Limpando dados existentes...');
+  //   await prisma.logs.deleteMany();
+  //   await prisma.atribuicoes.deleteMany();
+  //   await prisma.equipes_Membros.deleteMany();
+  //   await prisma.equipes.deleteMany();
+  //   await prisma.obras.deleteMany();
+  //   await prisma.prestadores.deleteMany();
+  //   await prisma.usuarios.deleteMany();
+  //   console.log('✅ Dados limpos!\n');
+  // }
 
   // ==================== USUÁRIOS ====================
   console.log('👤 Criando usuários...');
-  
+
   const hashedPasswordAdmin = await bcrypt.hash('admin123', 10);
   const hashedPasswordUser = await bcrypt.hash('user123', 10);
 
@@ -57,6 +58,71 @@ async function main() {
     }
   });
   console.log(`  ✅ Usuário criado: ${usuario2.email}\n`);
+  // ==================== ESPECIALIDADES ====================
+  console.log('🛠️ Criando especialidades...');
+
+  const especialidadesLista = [
+    'Pedreiro', 'Servente', 'Eletricista', 'Encanador', 'Pintor',
+    'Carpinteiro', 'Mestre de Obras', 'Engenheiro Civil', 'Arquiteto',
+    'Gesseiro', 'Serralheiro', 'Vidraceiro', 'Azulejista'
+  ];
+
+  for (const esp of especialidadesLista) {
+    await prisma.especialidades.upsert({
+      where: { nome: esp },
+      update: {},
+      create: { nome: esp }
+    });
+  }
+  console.log('  ✅ Especialidades padrão criadas\n');
+
+  console.log('  ✅ Especialidades padrão criadas\n');
+
+  // ==================== UNIDADES ====================
+  console.log('📏 Criando unidades...');
+  const UNIDADES = [
+    { nome: 'Metro', sigla: 'm' },
+    { nome: 'Metro Quadrado', sigla: 'm²' },
+    { nome: 'Metro Cúbico', sigla: 'm³' },
+    { nome: 'Quilo', sigla: 'kg' },
+    { nome: 'Saco', sigla: 'sc' },
+    { nome: 'Unidade', sigla: 'un' },
+    { nome: 'Litro', sigla: 'l' },
+    { nome: 'Barra', sigla: 'br' },
+    { nome: 'Caixa', sigla: 'cx' },
+    { nome: 'Rolo', sigla: 'rl' }
+  ];
+
+  for (const item of UNIDADES) {
+    await prisma.unidades.upsert({
+      where: { sigla: item.sigla },
+      update: {},
+      create: item
+    });
+  }
+  console.log('  ✅ Unidades padrão criadas\n');
+
+  // ==================== PRODUTOS ====================
+  console.log('🧱 Criando produtos (materiais básicos)...');
+  const PRODUTOS = [
+    { nome: 'Cimento CP-II', unidade: 'sc' },
+    { nome: 'Areia Média', unidade: 'm³' },
+    { nome: 'Pedra Brita 1', unidade: 'm³' },
+    { nome: 'Cal Hidratada', unidade: 'sc' },
+    { nome: 'Tijolo Cerâmico 8 furos', unidade: 'un' },
+    { nome: 'Tinta Acrílica Fosca Branco', unidade: 'l' },
+    { nome: 'Cano PVC Soldável 25mm', unidade: 'br' },
+    { nome: 'Fio Flexível 2.5mm', unidade: 'rl' }
+  ];
+
+  for (const item of PRODUTOS) {
+    await prisma.produtos.upsert({
+      where: { nome: item.nome },
+      update: {},
+      create: item
+    });
+  }
+  console.log('  ✅ Produtos padrão criados\n');
 
   // ==================== PRESTADORES ====================
   console.log('👷 Criando prestadores...');

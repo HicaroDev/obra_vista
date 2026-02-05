@@ -63,6 +63,7 @@ model Prestadores {
   dia_pagamento         Int?      // Dia do mês para pagamento de salário (ex: 5)
   dia_vale              Int?      // Dia do mês para pagamento do vale (ex: 20)
   valor_adiantamento    Decimal?  @db.Decimal(10, 2) // Valor fixo do vale/adiantamento
+  usa_folha_ponto       Boolean   @default(true) // Se deve aparecer na folha de ponto
   atribuicoes   Atribuicoes[]
   equipes       Equipes_Membros[]
   frequencia    Frequencia[]

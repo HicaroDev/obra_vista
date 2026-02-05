@@ -689,3 +689,28 @@ export const ferramentasApi = {
     return fetchApi<any>('/ferramentas/dashboard/stats');
   }
 };
+
+// ==================== BACKUP ====================
+
+export const backupApi = {
+  create: async (): Promise<ApiResponse<{ message: string; logs: string }>> => {
+    return fetchApi('/backup', {
+      method: 'POST',
+    });
+  },
+
+  list: async (): Promise<ApiResponse<{ name: string; size: number; createdAt: string }[]>> => {
+    return fetchApi('/backup');
+  },
+
+  restore: async (filename: string): Promise<ApiResponse<{ message: string; logs: string }>> => {
+    return fetchApi(`/backup/${filename}/restore`, {
+      method: 'POST',
+    });
+  },
+
+  getDownloadUrl: (filename: string) => {
+    return `http://localhost:3001/api/backup/${filename}`;
+  }
+};
+

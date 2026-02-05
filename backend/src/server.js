@@ -107,6 +107,7 @@ app.use('/api/produtos', produtosRoutes);
 app.use('/api/unidades', unidadesRoutes);
 app.use('/api/frequencia', frequenciaRoutes);
 app.use('/api/ferramentas', ferramentasRoutes);
+app.use('/api/backup', require('./routes/backup.routes')); // Nova rota de backup
 
 // ==================== ERROR HANDLING ====================
 
@@ -136,6 +137,10 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
+
+// Iniciar o agendador de backups
+const backupScheduler = require('./services/backupScheduler');
+backupScheduler.start();
 
 app.listen(PORT, () => {
   console.log('\n🚀 ========================================');

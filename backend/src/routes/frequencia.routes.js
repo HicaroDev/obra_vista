@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
             FROM prestadores p
             LEFT JOIN frequencia f ON p.id = f."prestadorId" AND f.data = $1
             LEFT JOIN obras o ON f."obraId" = o.id
-            WHERE p.ativo = true
+            WHERE p.ativo = true AND p.usa_folha_ponto = true
             ORDER BY p.nome ASC
         `;
 

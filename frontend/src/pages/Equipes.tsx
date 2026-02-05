@@ -23,6 +23,7 @@ export function Equipes() {
     const [equipes, setEquipes] = useState<Equipe[]>([]);
     const [prestadores, setPrestadores] = useState<Prestador[]>([]);
     const [loading, setLoading] = useState(true);
+    const [processing, setProcessing] = useState(false); // Novo estado
     const [loadingPrestadores, setLoadingPrestadores] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
@@ -83,6 +84,7 @@ export function Equipes() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setProcessing(true); // Bloqueia
 
         try {
             if (editingEquipe) {
@@ -95,6 +97,8 @@ export function Equipes() {
             handleCloseModal();
         } catch (error) {
             console.error('Erro ao salvar equipe:', error);
+        } finally {
+            setProcessing(false); // Libera
         }
     };
 
@@ -515,16 +519,18 @@ export function Equipes() {
                                 <div className="flex gap-3 pt-6 border-t border-border mt-2">
                                     <button
                                         type="button"
+                                        disabled={processing}
                                         onClick={handleCloseModal}
-                                        className="flex-1 px-4 py-2.5 bg-background border border-input rounded-lg hover:bg-accent transition-colors text-sm font-medium"
+                                        className="flex-1 px-4 py-2.5 bg-background border border-input rounded-lg hover:bg-accent transition-colors text-sm font-medium disabled:opacity-50"
                                     >
                                         Cancelar
                                     </button>
                                     <button
                                         type="submit"
-                                        className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all text-sm font-medium shadow-sm"
+                                        disabled={processing}
+                                        className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        {editingEquipe ? 'Salvar Alterações' : 'Criar Equipe'}
+                                        {processing ? 'Salvando...' : (editingEquipe ? 'Salvar Alterações' : 'Criar Equipe')}
                                     </button>
                                 </div>
                             </form>

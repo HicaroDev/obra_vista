@@ -57,6 +57,8 @@ export function Layout({ children }: LayoutProps) {
     MANAGEMENT: [
       { name: 'Relatórios', href: '/relatorios', icon: PiFileText, page: 'relatorios' },
       { name: 'Usuários', href: '/usuarios', icon: PiUserGear, page: 'usuarios' },
+      { name: 'Configurações', href: '/configuracoes', icon: PiGear, page: 'usuarios' }, // Acesso restrito via página
+
       {
         name: 'Cadastros',
         icon: PiFolderPlus,

@@ -7,11 +7,14 @@ import {
   PiHouse, PiUsersThree, PiBuildings, PiKanban, PiCalendarCheck,
   PiBriefcase, PiFileText, PiUserGear, PiGear,
   PiCaretDown, PiCaretRight, PiFolderPlus, PiPackage, PiScales, PiWrench,
-  PiSquaresFour, PiCurrencyDollar, PiHandshake, PiArrowLeft, PiArrowsLeftRight, PiHardHat
+  PiSquaresFour, PiCurrencyDollar, PiHandshake, PiArrowLeft, PiArrowsLeftRight, PiHardHat,
+  PiChartLine, PiTag, PiIdentificationCard
 } from 'react-icons/pi';
 import { useAuthStore } from '../store/authStore';
 import { canAccessPage } from '../lib/permissions';
 import { cn } from '../utils/cn';
+import { SYSTEM_MODULES } from '../constants/modules';
+import { useRef, useEffect } from 'react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -25,6 +28,21 @@ export function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
 
   const [openMenus, setOpenMenus] = useState<string[]>(['Cadastros']);
+  const [showModuleMenu, setShowModuleMenu] = useState(false);
+  const moduleMenuRef = useRef<HTMLDivElement>(null);
+
+  // Fechar menu ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (moduleMenuRef.current && !moduleMenuRef.current.contains(event.target as Node)) {
+        setShowModuleMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [moduleMenuRef]);
 
   interface NavigationItem {
     name: string;
@@ -36,45 +54,36 @@ export function Layout({ children }: LayoutProps) {
 
   // ... (interface NavigationItem)
 
-  // Definição dos Menus por Módulo
-  const menusByModule = {
-    OPERATIONAL: [
-      { name: 'Dashboard', href: '/', icon: PiHouse, page: 'dashboard' },
+  // Definição dos Menus por Módulo (Sincronizado com SYSTEM_MODULES)
+  const menusByModule: Record<string, NavigationItem[]> = {
+    gestao: [
+      { name: 'Dashboard', href: '/', icon: PiSquaresFour, page: 'dashboard' },
+      { name: 'Relatórios', href: '/relatorios', icon: PiChartLine, page: 'relatorios' },
+      { name: 'Usuários', href: '/usuarios', icon: PiIdentificationCard, page: 'usuarios' },
+      { name: 'Prestadores', href: '/prestadores', icon: PiBriefcase, page: 'prestadores' },
+      { name: 'Configurações', href: '/configuracoes', icon: PiGear, page: 'configuracoes' },
+      { name: 'Especialidades', href: '/especialidades', icon: PiTag, page: 'tipos_prestadores' },
+    ],
+    operacional: [
       { name: 'Obras', href: '/obras', icon: PiBuildings, page: 'obras' },
       { name: 'Kanban', href: '/kanban', icon: PiKanban, page: 'kanban' },
-      { name: 'Ferramentas', href: '/ferramentas', icon: PiWrench, page: 'kanban' }, // Adicionado
+      { name: 'Equipes', href: '/equipes', icon: PiUsersThree, page: 'equipes' },
+      { name: 'Ferramentas', href: '/ferramentas', icon: PiWrench, page: 'ferramentas' },
       { name: 'Ponto', href: '/frequencia', icon: PiCalendarCheck, page: 'kanban' },
-      { name: 'Equipes', href: '/equipes', icon: PiUsersThree, page: 'equipes' }, // Movido para Operacional
     ],
-    FINANCIAL: [
-      { name: 'Dashboard Fin.', href: '/financeiro', icon: PiCurrencyDollar, page: 'dashboard' },
-      // Futuros...
+    financeiro: [
+      { name: 'Lançamentos', href: '/financeiro', icon: PiCurrencyDollar, page: 'financeiro' },
+      { name: 'Produtos', href: '/produtos', icon: PiPackage, page: 'produtos' },
+      { name: 'Unidades', href: '/unidades', icon: PiScales, page: 'unidades' },
     ],
-    CRM: [
-      { name: 'Pipeline', href: '/crm', icon: PiHandshake, page: 'dashboard' },
-      // Futuros...
+    crm: [
+      { name: 'Pipeline', href: '/crm', icon: PiHandshake, page: 'crm' },
     ],
-    MANAGEMENT: [
-      { name: 'Relatórios', href: '/relatorios', icon: PiFileText, page: 'relatorios' },
-      { name: 'Usuários', href: '/usuarios', icon: PiUserGear, page: 'usuarios' },
-      { name: 'Configurações', href: '/configuracoes', icon: PiGear, page: 'usuarios' }, // Acesso restrito via página
-
-      {
-        name: 'Cadastros',
-        icon: PiFolderPlus,
-        page: 'prestadores',
-        children: [
-          { name: 'Prestadores', href: '/prestadores', icon: PiBriefcase, page: 'prestadores' },
-          { name: 'Tipos de Prestadores', href: '/especialidades', icon: PiGear, page: 'prestadores' },
-          { name: 'Produtos', href: '/produtos', icon: PiPackage, page: 'prestadores' },
-          { name: 'Unidades', href: '/unidades', icon: PiScales, page: 'prestadores' },
-        ]
-      },
-    ]
+    // Fallback
   };
 
-  // Seleciona menu com fallback para OPERACIONAL se null
-  const currentMenu = menusByModule[activeModule || 'OPERATIONAL'] || [];
+  // Seleciona menu com fallback
+  const currentMenu = menusByModule[activeModule || 'gestao'] || menusByModule['operacional'] || [];
 
   const filterNavigation = (items: NavigationItem[]): NavigationItem[] => {
     // ... (Lógica de filtro de permissão existente)
@@ -189,45 +198,96 @@ export function Layout({ children }: LayoutProps) {
           </div>
 
           {/* Botão para trocar de módulo (Estilo Premium) */}
-          <div className="mx-3 mt-4 mb-2">
+          {/* Botão para trocar de módulo (Estilo Premium) */}
+          <div className="mx-3 mt-4 mb-2 relative" ref={moduleMenuRef}>
             <button
-              onClick={() => {
-                setModule(null);
-                navigate('/modules');
-              }}
+              onClick={() => setShowModuleMenu(!showModuleMenu)}
               className="w-full group relative overflow-hidden bg-white hover:bg-gray-50 border border-gray-100 shadow-sm hover:shadow-md rounded-2xl p-3 transition-all duration-300 text-left"
             >
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400 pl-0.5">Módulo Atual</span>
                 <div className="flex items-center text-[10px] font-bold text-blue-600 opacity-60 group-hover:opacity-100 transition-opacity bg-blue-50 px-2 py-0.5 rounded-full">
-                  TROCAR <PiArrowsLeftRight className="ml-1" />
+                  TROCAR <PiCaretRight className={`ml-1 transition-transform ${showModuleMenu ? 'rotate-90' : ''}`} />
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 <div className={cn(
                   "w-10 h-10 rounded-xl flex items-center justify-center text-xl shadow-sm text-white transition-transform group-hover:scale-110",
-                  activeModule === 'FINANCIAL' ? 'bg-emerald-500' :
-                    activeModule === 'CRM' ? 'bg-purple-500' :
-                      activeModule === 'MANAGEMENT' ? 'bg-slate-600' :
-                        'bg-blue-600'
+                  activeModule === 'financeiro' ? 'bg-emerald-500' :
+                    activeModule === 'sistema' ? 'bg-slate-600' :
+                      activeModule === 'operacional' ? 'bg-blue-600' :
+                        'bg-violet-500'
                 )}>
-                  {activeModule === 'FINANCIAL' ? <PiCurrencyDollar /> :
-                    activeModule === 'CRM' ? <PiHandshake /> :
-                      activeModule === 'MANAGEMENT' ? <PiGear /> :
-                        <PiHardHat />}
+                  {/* Renderiza o ícone do módulo ativo ou default */}
+                  {(() => {
+                    const mod = SYSTEM_MODULES.find(m => m.id === (activeModule || 'gestao'));
+                    const Icon = mod?.icon || PiSquaresFour;
+                    return <Icon />;
+                  })()}
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-800 leading-tight">
-                    {activeModule === 'FINANCIAL' ? 'Financeiro' :
-                      activeModule === 'CRM' ? 'CRM & Vendas' :
-                        activeModule === 'MANAGEMENT' ? 'Gestão' :
-                          'Operacional'}
+                    {SYSTEM_MODULES.find(m => m.id === (activeModule || 'gestao'))?.label || 'Módulo'}
                   </h3>
-                  <p className="text-[11px] text-gray-400 font-medium">Obra Vista</p>
+                  <p className="text-[11px] text-gray-400 font-medium overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]">
+                    {(SYSTEM_MODULES.find(m => m.id === (activeModule || 'gestao'))?.description || '').split(' ')[0] + '...'}
+                  </p>
                 </div>
               </div>
             </button>
+
+            {/* EXPANDED MENU (Lateral à direita do botão) */}
+            {showModuleMenu && (
+              <div className="absolute left-full top-0 ml-4 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-[100] animate-in fade-in slide-in-from-left-4 duration-200">
+                <div className="px-3 py-2 border-b border-gray-100 mb-2">
+                  <h4 className="font-bold text-gray-800">Módulos Disponíveis</h4>
+                  <p className="text-xs text-gray-400">Selecione para navegar</p>
+                </div>
+                <div className="space-y-1 max-h-[400px] overflow-y-auto pr-1">
+                  {SYSTEM_MODULES.map((modulo) => (
+                    <button
+                      key={modulo.id}
+                      onClick={() => {
+                        setModule(modulo.id as any);
+                        setShowModuleMenu(false);
+                        // Se necessário, navegar para a home do módulo
+                        // Mas geralmente mudar o estado já atualiza o menu
+                      }}
+                      className={cn(
+                        "w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left group",
+                        activeModule === modulo.id
+                          ? "bg-blue-50 border border-blue-100"
+                          : "hover:bg-gray-50 border border-transparent"
+                      )}
+                    >
+                      <div className={cn(
+                        "p-2 rounded-lg shrink-0",
+                        activeModule === modulo.id ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-500 group-hover:bg-white group-hover:shadow-sm"
+                      )}>
+                        <modulo.icon size={18} />
+                      </div>
+                      <div>
+                        <div className={cn(
+                          "font-bold text-sm",
+                          activeModule === modulo.id ? "text-blue-700" : "text-gray-700"
+                        )}>
+                          {modulo.label}
+                        </div>
+                        <div className="text-[10px] text-gray-400 leading-tight mt-0.5">
+                          {modulo.description}
+                        </div>
+                      </div>
+                      {activeModule === modulo.id && (
+                        <div className="ml-auto flex h-full items-center">
+                          <div className="w-2 h-2 rounded-full bg-blue-500" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <nav className="p-3 lg:p-4 space-y-1.5 overflow-y-auto h-full scrollbar-hide py-2">

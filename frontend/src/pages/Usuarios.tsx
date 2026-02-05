@@ -17,6 +17,7 @@ import {
     PiX as X,
     PiWarningCircle as AlertCircle
 } from 'react-icons/pi';
+import { SYSTEM_MODULES } from '../constants/modules';
 
 export function Usuarios() {
     const { user } = useAuthStore();
@@ -108,9 +109,13 @@ export function Usuarios() {
         }
     };
 
+    const [activeTab, setActiveTab] = useState<'dados' | 'permissoes'>('dados');
+    const [activeModuleTab, setActiveModuleTab] = useState<string>(SYSTEM_MODULES[0].id);
+
     const handleCloseModal = () => {
         setShowModal(false);
         setEditingUsuario(null);
+        setActiveTab('dados'); // Reset tab
         setFormData({
             nome: '',
             email: '',
@@ -215,6 +220,12 @@ export function Usuarios() {
                                 <div>
                                     <h3 className="font-semibold text-foreground">{usuario.nome}</h3>
                                     <div className="flex items-center gap-2 mt-1">
+                                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${usuario.permissoesCustom?.admin
+                                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200'
+                                            : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400 border border-gray-200'
+                                            }`}>
+                                            {usuario.permissoesCustom?.admin ? 'Administrador' : 'Usuário Padrão'}
+                                        </span>
                                         <span className={`px-2 py-0.5 rounded text-xs font-medium ${usuario.ativo
                                             ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
                                             : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
@@ -308,263 +319,311 @@ export function Usuarios() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
-                    <div className="bg-background border border-border rounded-2xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl">
-                        <div className="sticky top-0 bg-background border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
-                            <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                                {editingUsuario ? 'Editar Usuário' : 'Cadastrar Novo Usuário'}
-                            </h2>
+                    <div className="bg-background border border-border rounded-2xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+
+                        {/* Header Modal */}
+                        <div className="bg-background border-b border-border px-6 py-4 flex items-center justify-between shrink-0">
+                            <div>
+                                <h2 className="text-xl font-bold text-foreground">
+                                    {editingUsuario ? 'Editar Usuário' : 'Cadastrar Novo Usuário'}
+                                </h2>
+                                <p className="text-sm text-muted-foreground">Preencha os dados e defina os acessos</p>
+                            </div>
                             <button
                                 onClick={handleCloseModal}
-                                className="p-2 hover:bg-accent rounded-lg transition-colors"
+                                className="p-2 hover:bg-accent rounded-lg transition-colors text-muted-foreground hover:text-foreground"
                             >
-                                <X size={20} />
+                                <X size={24} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-2 text-foreground">Nome *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.nome}
-                                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
-                                        placeholder="Ex: João Silva"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-2 text-foreground">Email *</label>
-                                    <input
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
-                                        placeholder="joao@exemplo.com"
-                                        required
-                                    />
-                                </div>
+                        {/* Tabs Principais */}
+                        <div className="px-6 border-b border-border bg-muted/10 shrink-0">
+                            <div className="flex gap-6">
+                                <button
+                                    onClick={() => setActiveTab('dados')}
+                                    className={`py-3 px-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'dados'
+                                        ? 'border-primary text-primary'
+                                        : 'border-transparent text-muted-foreground hover:text-foreground'
+                                        }`}
+                                >
+                                    <Users size={18} />
+                                    Dados Pessoais
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('permissoes')}
+                                    className={`py-3 px-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === 'permissoes'
+                                        ? 'border-primary text-primary'
+                                        : 'border-transparent text-muted-foreground hover:text-foreground'
+                                        }`}
+                                >
+                                    <Shield size={18} />
+                                    Permissões de Acesso
+                                </button>
                             </div>
+                        </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-2 text-foreground">
-                                        Senha {editingUsuario ? '(deixe em branco para manter)' : '*'}
-                                    </label>
-                                    <input
-                                        type="password"
-                                        value={formData.senha}
-                                        onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
-                                        placeholder="••••••••"
-                                        required={!editingUsuario}
-                                    />
-                                </div>
+                        {/* Corpo do Modal (Scrollável) */}
+                        <div className="flex-1 overflow-hidden">
+                            <form onSubmit={handleSubmit} className="h-full flex flex-col">
+                                <div className="flex-1 overflow-y-auto p-6">
 
-                                <div>
-                                    <label className="block text-sm font-medium mb-2 text-foreground">Telefone</label>
-                                    <input
-                                        type="tel"
-                                        value={formData.telefone}
-                                        onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                                        className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground appearance-none"
-                                        placeholder="(11) 98765-4321"
-                                    />
-                                </div>
-                            </div>
+                                    {/* ABA: DADOS PESSOAIS */}
+                                    {activeTab === 'dados' && (
+                                        <div className="max-w-3xl mx-auto space-y-6 animate-in slide-in-from-left-4 duration-300">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <label className="text-sm text-foreground">Nome Completo *</label>
+                                                    <input
+                                                        type="text"
+                                                        value={formData.nome}
+                                                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                                                        className="w-full px-4 py-2.5 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-foreground"
+                                                        placeholder="Ex: João Silva"
+                                                        required
+                                                    />
+                                                </div>
 
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Cargo</label>
-                                <input
-                                    type="text"
-                                    value={formData.cargo}
-                                    onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
-                                    className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
-                                    placeholder="Ex: Engenheiro Civil"
-                                />
-                            </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-sm text-foreground">Email de Acesso *</label>
+                                                    <input
+                                                        type="email"
+                                                        value={formData.email}
+                                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                                        className="w-full px-4 py-2.5 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-foreground"
+                                                        placeholder="joao@exemplo.com"
+                                                        required
+                                                    />
+                                                </div>
 
-                            {/* Seleção de Roles */}
-                            <div>
-                                <label className="block text-sm font-medium mb-3 text-foreground">Perfil de Acesso (Role) *</label>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                                    {roles.map((role) => (
-                                        <label
-                                            key={role.id}
-                                            className={`flex items-start gap-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.roleIds.includes(role.id)
-                                                ? 'bg-primary/10 border-primary'
-                                                : 'bg-background border-input hover:border-primary/50'
-                                                }`}
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.roleIds.includes(role.id)}
-                                                onChange={() => toggleRole(role.id)}
-                                                className="mt-1"
-                                            />
-                                            <div className="flex-1">
-                                                <div className="font-medium text-foreground">{role.nome}</div>
-                                                {role.descricao && (
-                                                    <div className="text-sm text-muted-foreground mt-1">
-                                                        {role.descricao}
+                                                <div className="space-y-2">
+                                                    <label className="text-sm text-foreground">
+                                                        Senha {editingUsuario ? '(opcional)' : '*'}
+                                                    </label>
+                                                    <input
+                                                        type="password"
+                                                        value={formData.senha}
+                                                        onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
+                                                        className="w-full px-4 py-2.5 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-foreground"
+                                                        placeholder={editingUsuario ? 'Manter senha atual' : 'Defina uma senha segura'}
+                                                        required={!editingUsuario}
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <label className="text-sm text-foreground">Telefone / WhatsApp</label>
+                                                    <input
+                                                        type="tel"
+                                                        value={formData.telefone}
+                                                        onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                                                        className="w-full px-4 py-2.5 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-foreground"
+                                                        placeholder="(11) 99999-9999"
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-2 md:col-span-2">
+                                                    <label className="text-sm text-foreground">Cargo / Função</label>
+                                                    <input
+                                                        type="text"
+                                                        value={formData.cargo}
+                                                        onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
+                                                        className="w-full px-4 py-2.5 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-foreground"
+                                                        placeholder="Ex: Mestre de Obras"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-6 border-t border-border">
+                                                <div className="bg-muted/30 p-4 rounded-xl border border-border flex items-center gap-4">
+                                                    <div className="bg-background border border-border p-2 rounded-lg">
+                                                        <Users size={24} className="text-primary" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h4 className="text-foreground">Status do Usuário</h4>
+                                                        <p className="text-xs text-muted-foreground">Define se o usuário pode realizar login no sistema</p>
+                                                    </div>
+                                                    <label className="relative inline-flex items-center cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="sr-only peer"
+                                                            checked={formData.ativo}
+                                                            onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
+                                                        />
+                                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 dark:peer-focus:ring-primary/80 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* ABA: PERMISSÕES */}
+                                    {activeTab === 'permissoes' && (
+                                        <div className="h-full flex flex-col md:flex-row gap-6 animate-in slide-in-from-right-4 duration-300">
+
+                                            {/* Painel Esquerdo: Tipo de Conta e Navegação de Módulos */}
+                                            <div className="w-full md:w-64 shrink-0 space-y-6">
+                                                {/* Tipo de Conta */}
+                                                <div className="bg-muted/30 p-4 rounded-xl border border-border">
+                                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 block">
+                                                        Tipo de Acesso
+                                                    </label>
+                                                    <div className="space-y-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const allKeys = SYSTEM_MODULES.flatMap(m => m.tools.map(t => t.id));
+                                                                const allPermissions = allKeys.reduce((acc, key) => ({ ...acc, [key]: 'gerenciar' }), {});
+                                                                setFormData(prev => ({ ...prev, permissoesCustom: { ...allPermissions, admin: true } }));
+                                                            }}
+                                                            className={`w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-all ${formData.permissoesCustom?.admin
+                                                                ? 'bg-primary/10 border-primary text-primary'
+                                                                : 'bg-background border-border hover:border-border/80 text-foreground'
+                                                                }`}
+                                                        >
+                                                            <Shield size={20} />
+                                                            <div>
+                                                                <div className="font-semibold text-sm">Administrador</div>
+                                                                <div className="text-[10px] opacity-80">Acesso Total</div>
+                                                            </div>
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setFormData(prev => {
+                                                                    const newPerms = { ...prev.permissoesCustom };
+                                                                    delete newPerms.admin;
+                                                                    return { ...prev, permissoesCustom: newPerms };
+                                                                });
+                                                            }}
+                                                            className={`w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-all ${!formData.permissoesCustom?.admin
+                                                                ? 'bg-primary/10 border-primary text-primary'
+                                                                : 'bg-background border-border hover:border-border/80 text-foreground'
+                                                                }`}
+                                                        >
+                                                            <Users size={20} />
+                                                            <div>
+                                                                <div className="font-semibold text-sm">Usuário Padrão</div>
+                                                                <div className="text-[10px] opacity-80">Personalizado</div>
+                                                            </div>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Navegação por Módulos (Só se for Padrão) */}
+                                                {!formData.permissoesCustom?.admin && (
+                                                    <div className="space-y-1">
+                                                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block px-1">
+                                                            Módulos do Sistema
+                                                        </label>
+                                                        {SYSTEM_MODULES.map((modulo) => (
+                                                            <button
+                                                                key={modulo.id}
+                                                                type="button"
+                                                                onClick={() => setActiveModuleTab(modulo.id)}
+                                                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeModuleTab === modulo.id
+                                                                    ? 'bg-primary text-primary-foreground'
+                                                                    : 'text-muted-foreground hover:bg-accent/50'
+                                                                    }`}
+                                                            >
+                                                                <modulo.icon size={18} />
+                                                                {modulo.label}
+                                                            </button>
+                                                        ))}
                                                     </div>
                                                 )}
                                             </div>
-                                        </label>
-                                    ))}
+
+                                            {/* Painel Direito: Conteúdo do Módulo */}
+                                            <div className="flex-1 bg-card border border-border rounded-xl p-6 overflow-hidden flex flex-col">
+                                                {formData.permissoesCustom?.admin ? (
+                                                    <div className="flex-1 flex flex-col items-center justify-center text-center p-8 opacity-60">
+                                                        <div className="bg-primary/10 p-4 rounded-full mb-4">
+                                                            <Shield size={48} className="text-primary" />
+                                                        </div>
+                                                        <h3 className="text-xl font-bold text-foreground mb-2">Acesso de Administrador</h3>
+                                                        <p className="text-muted-foreground max-w-sm">
+                                                            Este usuário tem permissão total e irrestrita a todos os módulos e ferramentas do sistema. Não é necessário configurar permissões individuais.
+                                                        </p>
+                                                    </div>
+                                                ) : (
+                                                    <div className="h-full flex flex-col">
+                                                        {(() => {
+                                                            const activeModule = SYSTEM_MODULES.find(m => m.id === activeModuleTab) || SYSTEM_MODULES[0];
+                                                            return (
+                                                                <>
+                                                                    <div className="mb-6 pb-6 border-b border-border">
+                                                                        <div className="flex items-center gap-3 mb-2">
+                                                                            <activeModule.icon className="text-primary" size={28} />
+                                                                            <h3 className="text-xl font-bold text-foreground">{activeModule.label}</h3>
+                                                                        </div>
+                                                                        <p className="text-muted-foreground">{activeModule.description}</p>
+                                                                    </div>
+
+                                                                    <div className="flex-1 overflow-y-auto pr-2 space-y-4">
+                                                                        {activeModule.tools.map(tool => (
+                                                                            <div key={tool.id} className="flex items-center justify-between p-4 rounded-xl border border-border hover:bg-accent/20 transition-colors">
+                                                                                <div className="flex-1 mr-4">
+                                                                                    <div className="font-semibold text-foreground mb-1">{tool.label}</div>
+                                                                                    <div className="text-sm text-muted-foreground">{tool.description}</div>
+                                                                                </div>
+                                                                                <div className="w-56 shrink-0">
+                                                                                    <select
+                                                                                        value={formData.permissoesCustom?.[tool.id] || 'bloqueado'}
+                                                                                        onChange={(e) => setFormData(prev => ({
+                                                                                            ...prev,
+                                                                                            permissoesCustom: {
+                                                                                                ...prev.permissoesCustom,
+                                                                                                [tool.id]: e.target.value
+                                                                                            }
+                                                                                        }))}
+                                                                                        className={`w-full text-sm rounded-lg border-2 px-3 py-2 focus:ring-2 focus:ring-primary/20 outline-none transition-all font-medium ${(formData.permissoesCustom?.[tool.id] === 'bloqueado' || !formData.permissoesCustom?.[tool.id])
+                                                                                            ? 'bg-red-50 text-red-700 border-red-100'
+                                                                                            : formData.permissoesCustom?.[tool.id] === 'visualizar'
+                                                                                                ? 'bg-blue-50 text-blue-700 border-blue-100'
+                                                                                                : formData.permissoesCustom?.[tool.id] === 'editar'
+                                                                                                    ? 'bg-green-50 text-green-700 border-green-100'
+                                                                                                    : 'bg-purple-50 text-purple-700 border-purple-100'
+                                                                                            }`}
+                                                                                    >
+                                                                                        <option value="bloqueado">🔒 Bloqueado</option>
+                                                                                        <option value="visualizar">👁️ Visualizar</option>
+                                                                                        <option value="editar">✏️ Editar (Sem Excluir)</option>
+                                                                                        <option value="gerenciar">⚙️ Gerenciar (Total)</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </>
+                                                            );
+                                                        })()}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
                                 </div>
-                            </div>
 
-                            {/* Tipo de Conta (Admin ou Usuário) */}
-                            <div>
-                                <label className="block text-sm font-medium mb-3 text-foreground">Tipo de Conta</label>
-                                <div className="grid grid-cols-2 gap-4 mb-4">
-                                    <label
-                                        className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                                            // Se tiver a role de Admin (id 1 assumido ou lógica de permissoes) ou flag específica
-                                            // Simplificação: Vamos usar um estado local para controlar visualmente, mas salvar nas roles/permissoes
-                                            formData.permissoesCustom?.admin === true
-                                                ? 'bg-primary/10 border-primary shadow-sm'
-                                                : 'bg-background border-input hover:border-primary/50'
-                                            }`}
-                                        onClick={() => {
-                                            // Ao clicar em Admin, define todas as permissões como 'editar' e adiciona flag admin
-                                            const allPermissions = [
-                                                'dashboard', 'obras', 'equipes', 'usuarios',
-                                                'prestadores', 'produtos', 'financeiro',
-                                                'relatorios', 'configuracoes'
-                                            ].reduce((acc, key) => ({ ...acc, [key]: 'editar' }), {});
-
-                                            setFormData(prev => ({
-                                                ...prev,
-                                                permissoesCustom: { ...allPermissions, admin: true }
-                                            }));
-                                        }}
+                                {/* Footer Fixo com Botões */}
+                                <div className="p-6 border-t border-border bg-muted/10 shrink-0 flex items-center justify-end gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={handleCloseModal}
+                                        className="px-6 py-2.5 rounded-xl border border-border bg-background hover:bg-accent text-foreground transition-colors font-medium"
                                     >
-                                        <Shield size={24} className={formData.permissoesCustom?.admin === true ? 'text-primary' : 'text-muted-foreground'} />
-                                        <span className={`mt-2 font-medium ${formData.permissoesCustom?.admin === true ? 'text-primary' : 'text-foreground'}`}>
-                                            Administrador
-                                        </span>
-                                        <span className="text-xs text-muted-foreground mt-1 text-center">
-                                            Acesso total a todas as funcionalidades
-                                        </span>
-                                    </label>
-
-                                    <label
-                                        className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all ${!formData.permissoesCustom?.admin
-                                            ? 'bg-primary/10 border-primary shadow-sm'
-                                            : 'bg-background border-input hover:border-primary/50'
-                                            }`}
-                                        onClick={() => {
-                                            // Ao clicar em Padrão, remove flag admin (mantém permissões atuais ou reseta para visualizar? Melhor manter)
-                                            setFormData(prev => {
-                                                const newPerms = { ...prev.permissoesCustom };
-                                                delete newPerms.admin;
-                                                return { ...prev, permissoesCustom: newPerms };
-                                            });
-                                        }}
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25"
                                     >
-                                        <Users size={24} className={!formData.permissoesCustom?.admin ? 'text-primary' : 'text-muted-foreground'} />
-                                        <span className={`mt-2 font-medium ${!formData.permissoesCustom?.admin ? 'text-primary' : 'text-foreground'}`}>
-                                            Usuário Padrão
-                                        </span>
-                                        <span className="text-xs text-muted-foreground mt-1 text-center">
-                                            Configurar permissões por página
-                                        </span>
-                                    </label>
+                                        {editingUsuario ? 'Salvar Usuário' : 'Criar Usuário'}
+                                    </button>
                                 </div>
-                            </div>
-
-                            {/* Detalhes de Permissões (Só mostra ou habilita se for Padrão) */}
-                            <div className={`transition-opacity duration-200 ${formData.permissoesCustom?.admin ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}`}>
-                                <div className="flex items-center gap-2 mb-3">
-                                    <Shield size={18} className="text-primary" />
-                                    <label className="text-sm font-medium">Permissões Específicas por Página</label>
-                                </div>
-
-                                <div className="bg-accent/30 rounded-lg border border-border overflow-hidden">
-                                    {/* ... tabela existente ... */}
-                                    <table className="w-full text-sm">
-                                        <thead className="bg-accent/50 border-b border-border">
-                                            <tr>
-                                                <th className="px-4 py-2 text-left font-medium text-muted-foreground w-1/3">Página</th>
-                                                <th className="px-4 py-2 text-left font-medium text-muted-foreground">Nível de Acesso</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-border">
-                                            {[
-                                                { key: 'dashboard', label: 'Dashboard' },
-                                                { key: 'obras', label: 'Obras' },
-                                                { key: 'equipes', label: 'Equipes' },
-                                                { key: 'usuarios', label: 'Usuários' },
-                                                { key: 'prestadores', label: 'Prestadores' },
-                                                { key: 'produtos', label: 'Produtos / Estoque' },
-                                                { key: 'financeiro', label: 'Financeiro' },
-                                                { key: 'relatorios', label: 'Relatórios' },
-                                                { key: 'configuracoes', label: 'Configurações' }
-                                            ].map((page) => (
-                                                <tr key={page.key} className="hover:bg-accent/50">
-                                                    <td className="px-4 py-2 font-medium">{page.label}</td>
-                                                    <td className="px-4 py-2">
-                                                        <select
-                                                            value={(['criar', 'gerenciar'].includes(formData.permissoesCustom?.[page.key]) ? 'editar' : formData.permissoesCustom?.[page.key]) || 'visualizar'}
-                                                            onChange={(e) => setFormData(prev => ({
-                                                                ...prev,
-                                                                permissoesCustom: {
-                                                                    ...prev.permissoesCustom,
-                                                                    [page.key]: e.target.value
-                                                                }
-                                                            }))}
-                                                            disabled={formData.permissoesCustom?.admin === true}
-                                                            className="w-full bg-background border border-input rounded px-2 py-1 text-xs focus:ring-1 focus:ring-primary disabled:opacity-50 text-foreground"
-                                                        >
-                                                            <option value="bloqueado">🔒 Bloqueado</option>
-                                                            <option value="visualizar">👁️ Visualizar (Apenas Leitura)</option>
-                                                            <option value="editar">✨ Acesso Total (Criar/Editar)</option>
-                                                        </select>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <p className="text-xs text-muted-foreground mt-2">
-                                    * "Bloqueado" remove a página do menu lateral para este usuário.
-                                </p>
-                            </div>
-
-                            {/* Status Ativo */}
-                            <div className="flex items-center gap-3 mt-4">
-                                <input
-                                    type="checkbox"
-                                    id="ativo"
-                                    checked={formData.ativo}
-                                    onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-                                    className="w-4 h-4 rounded border-input text-primary focus:ring-primary"
-                                />
-                                <label htmlFor="ativo" className="text-sm font-medium cursor-pointer">
-                                    Usuário ativo (pode fazer login no sistema)
-                                </label>
-                            </div>
-
-                            <div className="flex gap-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={handleCloseModal}
-                                    className="flex-1 px-4 py-2 bg-accent hover:bg-accent/80 text-foreground rounded-lg transition-colors"
-                                >
-                                    Cancelar
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-                                >
-                                    {editingUsuario ? 'Salvar Alterações' : 'Criar Usuário'}
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}

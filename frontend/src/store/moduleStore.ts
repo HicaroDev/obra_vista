@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type ModuleType = 'OPERATIONAL' | 'FINANCIAL' | 'CRM' | 'MANAGEMENT' | null;
+// Adaptação para novos módulos (ids minúsculos vindos de SYSTEM_MODULES)
+export type ModuleType = 'gestao' | 'operacional' | 'recursos' | 'suprimentos' | 'financeiro' | 'sistema' | 'OPERATIONAL' | 'FINANCIAL' | 'CRM' | 'MANAGEMENT' | null;
 
 interface ModuleState {
     activeModule: ModuleType;

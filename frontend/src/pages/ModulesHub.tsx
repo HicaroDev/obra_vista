@@ -9,49 +9,37 @@ import {
     PiArrowRight
 } from 'react-icons/pi';
 import { cn } from '../utils/cn';
+import { SYSTEM_MODULES } from '../constants/modules';
 
 export function ModulesHub() {
     const navigate = useNavigate();
     const { setModule } = useModuleStore();
 
-    const modules = [
-        {
-            id: 'OPERATIONAL' as ModuleType,
-            title: 'Operacional',
-            description: 'Gestão de obras, equipes, ferramentas e diário de obra.',
-            icon: PiHardHat,
-            color: 'bg-blue-600',
-            lightColor: 'bg-blue-50 text-blue-600',
-            path: '/'
-        },
-        {
-            id: 'FINANCIAL' as ModuleType,
-            title: 'Financeiro & Compras',
-            description: 'Fluxo de caixa, contas a pagar/receber e pedidos.',
-            icon: PiCurrencyDollar,
-            color: 'bg-emerald-600',
-            lightColor: 'bg-emerald-50 text-emerald-600',
-            path: '/financeiro' // Futuro dashboard financeiro
-        },
-        {
-            id: 'CRM' as ModuleType,
-            title: 'CRM & Vendas',
-            description: 'Pipeline de vendas, orçamentos e gestão de clientes.',
-            icon: PiHandshake,
-            color: 'bg-purple-600',
-            lightColor: 'bg-purple-50 text-purple-600',
-            path: '/crm' // Futuro dashboard CRM
-        },
-        {
-            id: 'MANAGEMENT' as ModuleType,
-            title: 'Gestão & Config',
-            description: 'Cadastro de usuários, permissões e configurações globais.',
-            icon: PiGear,
-            color: 'bg-slate-700',
-            lightColor: 'bg-slate-50 text-slate-700',
-            path: '/usuarios'
+    const getModuleConfig = (id: string) => {
+        switch (id) {
+            case 'operacional':
+                return { color: 'bg-blue-600', lightColor: 'bg-blue-50 text-blue-600', path: '/obras' };
+            case 'financeiro':
+                return { color: 'bg-emerald-600', lightColor: 'bg-emerald-50 text-emerald-600', path: '/financeiro' };
+            case 'crm':
+                return { color: 'bg-purple-600', lightColor: 'bg-purple-50 text-purple-600', path: '/crm' };
+            case 'gestao':
+                return { color: 'bg-slate-700', lightColor: 'bg-slate-50 text-slate-700', path: '/' };
+            default:
+                return { color: 'bg-gray-600', lightColor: 'bg-gray-50 text-gray-600', path: '/' };
         }
-    ];
+    };
+
+    const modules = SYSTEM_MODULES.map(m => {
+        const config = getModuleConfig(m.id);
+        return {
+            id: m.id as ModuleType,
+            title: m.label,
+            description: m.description,
+            icon: m.icon,
+            ...config
+        };
+    });
 
     const handleSelectModule = (module: ModuleType, path: string) => {
         setModule(module);

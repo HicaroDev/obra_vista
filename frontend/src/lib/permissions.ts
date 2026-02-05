@@ -32,12 +32,13 @@ export const getPagePermission = (page: string, user?: Usuario | null): AccessLe
     // Futuro: Implementar hierarquia de roles
 
     // 3. Fallback para tipo de usuário (admin/usuario)
-    const userType = user.tipo || 'usuario';
+    const userType = (user.tipo || 'usuario') as 'admin' | 'usuario'; // Force type assertion se necessário, ou simplifique
+    // Se o usuário for admin, ele já retornou 'gerenciar' na linha 22.
+    // Portanto, aqui userType provavelmente será 'usuario' ou outro tipo se existir.
+
     const config = DEFAULT_PERMISSIONS[userType] || DEFAULT_PERMISSIONS['usuario'];
 
     if (config.menu.includes(page)) {
-        // Admin sempre pode tudo por padrao se nao tiver sido bloqueado explicitamente
-        if (userType === 'admin') return 'gerenciar';
         return config.defaultLevel;
     }
 
@@ -54,20 +55,29 @@ export const canAccessPage = (page: string, user?: Usuario | null): boolean => {
 // Hierarchy:
 // - bloqueado: Nenhum acesso
 // - visualizar: Apenas ver (Read Only)
-// - editar: Ver, Criar e Editar (No Delete)
-// - gerenciar (antigo criar): Acesso Total (Ver, Criar, Editar, Excluir)
-export const canPerformAction = (page: string, _action: 'criar' | 'editar' | 'excluir', user?: Usuario | null): boolean => {
+// - editar: Ver, Criar e Editar (Update/Insert) - NÃO PERMITE EXCLUIR
+// - gerenciar (antigo criar/admin): Acesso Total (Ver, Criar, Editar, Excluir)
+export const canPerformAction = (page: string, action: 'criar' | 'editar' | 'excluir', user?: Usuario | null): boolean => {
     // 1. Obter o nível de permissão do usuário para esta página
     const permission = getPagePermission(page, user);
 
     // 2. Se estiver bloqueado, nega tudo
     if (permission === 'bloqueado') return false;
 
-    // 3. Se for apenas visualizar, nega todas as ações de escrita
+    // 3. Admin sempre pode tudo (redundância de segurança)
+    if (permission === 'gerenciar') return true;
+
+    // 4. Se for 'visualizar', nega todas as ações de escrita
     if (permission === 'visualizar') return false;
 
-    // 4. Se tiver permissão 'editar' (Acesso Total), 'gerenciar' ou 'criar', permite tudo
-    if (permission === 'editar' || permission === 'gerenciar' || permission === 'criar') return true;
+    // 5. Nível 'editar': Permite criar e editar, mas nega excluir
+    if (permission === 'editar') {
+        if (action === 'excluir') return false;
+        return true; // Permite 'criar' e 'editar'
+    }
+
+    // 6. Fallback (se for criar ou tiver outros nomes legados)
+    if (permission === 'criar') return true; // Legacy: criar costumava ser total
 
     return false;
 };

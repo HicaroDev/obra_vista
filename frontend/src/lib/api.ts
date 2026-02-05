@@ -608,3 +608,84 @@ export const frequenciaApi = {
     });
   },
 };
+
+// ==================== FERRAMENTAS ====================
+
+export interface Ferramenta {
+  id: number;
+  nome: string;
+  marca?: string;
+  codigo?: string;
+  status: 'disponivel' | 'em_uso' | 'manutencao' | 'extraviada';
+  localizacao_atual?: {
+    obra?: { id: number; nome: string };
+    responsavel?: { id: number; nome: string };
+    dataSaida?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MovimentacaoFerramenta {
+  id: number;
+  ferramentaId: number;
+  obraId?: number;
+  responsavelId?: number;
+  dataSaida: string;
+  dataDevolucao?: string;
+  status: string;
+  observacao?: string;
+  obraNome?: string;
+  responsavelNome?: string;
+}
+
+export const ferramentasApi = {
+  getAll: async (): Promise<ApiResponse<Ferramenta[]>> => {
+    return fetchApi<Ferramenta[]>('/ferramentas');
+  },
+
+  getById: async (id: number): Promise<ApiResponse<Ferramenta>> => {
+    return fetchApi<Ferramenta>(`/ferramentas/${id}`);
+  },
+
+  create: async (data: Partial<Ferramenta>): Promise<ApiResponse<Ferramenta>> => {
+    return fetchApi<Ferramenta>('/ferramentas', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  update: async (id: number, data: Partial<Ferramenta>): Promise<ApiResponse<Ferramenta>> => {
+    return fetchApi<Ferramenta>(`/ferramentas/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  delete: async (id: number): Promise<ApiResponse<void>> => {
+    return fetchApi<void>(`/ferramentas/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  registrarMovimentacao: async (data: {
+    ferramentaId: number;
+    acao: 'saida' | 'devolucao';
+    obraId?: number;
+    responsavelId?: number;
+    observacao?: string;
+  }): Promise<ApiResponse<void>> => {
+    return fetchApi<void>('/ferramentas/movimentacao', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  getHistorico: async (id: number): Promise<ApiResponse<MovimentacaoFerramenta[]>> => {
+    return fetchApi<MovimentacaoFerramenta[]>(`/ferramentas/${id}/historico`);
+  },
+
+  getStats: async (): Promise<ApiResponse<any>> => {
+    return fetchApi<any>('/ferramentas/dashboard/stats');
+  }
+};

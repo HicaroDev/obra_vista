@@ -31,6 +31,7 @@ model Usuarios {
   @@index([email], map: "idx_usuarios_email")
   @@map("usuarios")
   @@schema("public")
+  movimentacoesFerramentas MovimentacaoFerramentas[]
 }
 
 model Prestadores {
@@ -71,6 +72,7 @@ model Prestadores {
   @@index([cpf], map: "idx_prestadores_cpf")
   @@map("prestadores")
   @@schema("public")
+  movimentacoesFerramentas MovimentacaoFerramentas[]
 }
 
 model Equipes {
@@ -125,6 +127,7 @@ model Obras {
   @@index([status], map: "idx_obras_status")
   @@map("obras")
   @@schema("public")
+  movimentacoesFerramentas MovimentacaoFerramentas[]
 }
 
 model Atribuicoes {
@@ -393,5 +396,45 @@ model Desconto {
   updatedAt   DateTime @updatedAt
 
   @@map("descontos")
+  @@schema("public")
+}
+
+model Ferramentas {
+  id            Int      @id @default(autoincrement())
+  nome          String   @db.VarChar(255)
+  marca         String?  @db.VarChar(100)
+  modelo        String?  @db.VarChar(100)
+  codigo        String?  @unique @db.VarChar(50) // Código de patrimônio
+  status        String   @default("disponivel") @db.VarChar(50) // disponivel, em_uso, manutencao, extraviada
+  foto          String?  @db.VarChar(500)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  movimentacoes MovimentacaoFerramentas[]
+
+  @@map("ferramentas")
+  @@schema("public")
+}
+
+model MovimentacaoFerramentas {
+  id            Int      @id @default(autoincrement())
+  ferramentaId  Int
+  obraId        Int?     // Pode ser nulo se for retirada para manutenção externa, mas ideal ter obra
+  responsavelId Int?     // Prestador responsável
+  usuarioId     Int?     // Usuário que registrou a movimentação (auditoria)
+  dataSaida     DateTime @default(now()) @db.Timestamp(6)
+  dataDevolucao DateTime? @db.Timestamp(6)
+  status        String   @default("em_uso") @db.VarChar(50) // em_uso, devolvida
+  observacao    String?
+
+  ferramenta    Ferramentas @relation(fields: [ferramentaId], references: [id], onDelete: Cascade)
+  obra          Obras?      @relation(fields: [obraId], references: [id], onDelete: SetNull)
+  responsavel   Prestadores? @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
+  usuario       Usuarios?   @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  @@map("movimentacao_ferramentas")
   @@schema("public")
 }

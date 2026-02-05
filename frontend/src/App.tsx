@@ -13,6 +13,8 @@ import { Usuarios } from './pages/Usuarios';
 import { Especialidades } from './pages/Especialidades';
 import { Produtos } from './pages/Produtos';
 import { Unidades } from './pages/Unidades';
+import { Ferramentas } from './pages/Ferramentas';
+import { ModulesHub } from './pages/ModulesHub';
 import { Layout } from './components/Layout';
 
 function App() {
@@ -41,6 +43,8 @@ function App() {
           <Route path="/especialidades" element={<Especialidades />} />
           <Route path="/produtos" element={<Produtos />} />
           <Route path="/unidades" element={<Unidades />} />
+          <Route path="/modules" element={<ModulesHub />} />
+          <Route path="/ferramentas" element={<Ferramentas />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

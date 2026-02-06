@@ -99,6 +99,27 @@ export function Layout({ children }: LayoutProps) {
     // Fallback
   };
 
+  // Função auxiliar recursiva para verificar se o path existe na árvore de navegação
+  const pathExistsInItems = (items: NavigationItem[], path: string): boolean => {
+    return items.some(item =>
+      item.href === path || (item.children && pathExistsInItems(item.children, path))
+    );
+  };
+
+  // Sincronizar Módulo com a URL atual
+  useEffect(() => {
+    if (location.pathname === '/modules' || location.pathname === '/') return;
+
+    for (const [modId, items] of Object.entries(menusByModule)) {
+      if (pathExistsInItems(items, location.pathname)) {
+        if (activeModule !== modId) {
+          setModule(modId as any);
+        }
+        break;
+      }
+    }
+  }, [location.pathname, activeModule, setModule]);
+
   // Seleciona menu com fallback
   const currentMenu = menusByModule[activeModule || 'gestao'] || menusByModule['operacional'] || [];
 

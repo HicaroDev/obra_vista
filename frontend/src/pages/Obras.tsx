@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { obrasApi } from '../lib/api';
 import type { Obra } from '../types';
 import { useAuthStore } from '../store/authStore';
@@ -20,7 +21,7 @@ export function Obras() {
     const { user } = useAuthStore();
     const [obras, setObras] = useState<Obra[]>([]);
     const [loading, setLoading] = useState(true);
-    const [processing, setProcessing] = useState(false); // Novo estado
+    const [processing, setProcessing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<'todos' | 'em_andamento' | 'pausado' | 'concluido'>('todos');
     const [showModal, setShowModal] = useState(false);
@@ -50,6 +51,7 @@ export function Obras() {
             }
         } catch (error) {
             console.error('Erro ao carregar obras:', error);
+            toast.error('Erro ao carregar obras.');
         } finally {
             setLoading(false);
         }
@@ -69,14 +71,17 @@ export function Obras() {
 
             if (editingObra) {
                 await obrasApi.update(editingObra.id, data);
+                toast.success('Obra atualizada com sucesso!');
             } else {
                 await obrasApi.create(data);
+                toast.success('Obra criada com sucesso!');
             }
 
             await loadObras();
             handleCloseModal();
         } catch (error) {
             console.error('Erro ao salvar obra:', error);
+            toast.error('Erro ao salvar obra. Verifique os dados.');
         } finally {
             setProcessing(false); // Libera
         }
@@ -87,9 +92,11 @@ export function Obras() {
 
         try {
             await obrasApi.delete(id);
+            toast.success('Obra excluída com sucesso!');
             await loadObras();
         } catch (error) {
             console.error('Erro ao excluir obra:', error);
+            toast.error('Erro ao excluir obra.');
         }
     };
 

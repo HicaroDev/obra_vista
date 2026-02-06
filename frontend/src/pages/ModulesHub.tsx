@@ -11,9 +11,13 @@ import {
 import { cn } from '../utils/cn';
 import { SYSTEM_MODULES } from '../constants/modules';
 
+import { useAuthStore } from '../store/authStore';
+import { hasModuleAccess } from '../lib/permissions';
+
 export function ModulesHub() {
     const navigate = useNavigate();
     const { setModule } = useModuleStore();
+    const { user } = useAuthStore();
 
     const getModuleConfig = (id: string) => {
         switch (id) {
@@ -30,16 +34,18 @@ export function ModulesHub() {
         }
     };
 
-    const modules = SYSTEM_MODULES.map(m => {
-        const config = getModuleConfig(m.id);
-        return {
-            id: m.id as ModuleType,
-            title: m.label,
-            description: m.description,
-            icon: m.icon,
-            ...config
-        };
-    });
+    const modules = SYSTEM_MODULES
+        .filter(m => hasModuleAccess(m.id, user))
+        .map(m => {
+            const config = getModuleConfig(m.id);
+            return {
+                id: m.id as ModuleType,
+                title: m.label,
+                description: m.description,
+                icon: m.icon,
+                ...config
+            };
+        });
 
     const handleSelectModule = (module: ModuleType, path: string) => {
         setModule(module);

@@ -3,6 +3,7 @@ import type { Usuario, Role } from '../types';
 import { usuariosApi, rolesApi } from '../lib/api';
 import { useAuthStore } from '../store/authStore';
 import { canPerformAction } from '../lib/permissions';
+import { toast } from 'sonner';
 import {
     PiUsers as Users,
     PiPlus as Plus,
@@ -70,15 +71,17 @@ export function Usuarios() {
         try {
             if (editingUsuario) {
                 await usuariosApi.update(editingUsuario.id, formData);
+                toast.success('Usuário atualizado com sucesso!');
             } else {
                 await usuariosApi.create(formData);
+                toast.success('Usuário criado com sucesso!');
             }
 
             await loadUsuarios();
             handleCloseModal();
         } catch (error) {
             console.error('Erro ao salvar usuário:', error);
-            alert('Erro ao salvar usuário. Verifique os dados e tente novamente.');
+            toast.error('Erro ao salvar usuário. Verifique os dados.');
         }
     };
 
@@ -101,10 +104,11 @@ export function Usuarios() {
         if (confirm('Tem certeza que deseja excluir este usuário?')) {
             try {
                 await usuariosApi.delete(id);
+                toast.success('Usuário excluído com sucesso!');
                 await loadUsuarios();
             } catch (error) {
                 console.error('Erro ao excluir usuário:', error);
-                alert('Erro ao excluir usuário.');
+                toast.error('Erro ao excluir usuário.');
             }
         }
     };
@@ -517,18 +521,56 @@ export function Usuarios() {
                                                             Módulos do Sistema
                                                         </label>
                                                         {SYSTEM_MODULES.map((modulo) => (
-                                                            <button
-                                                                key={modulo.id}
-                                                                type="button"
-                                                                onClick={() => setActiveModuleTab(modulo.id)}
-                                                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeModuleTab === modulo.id
-                                                                    ? 'bg-primary text-primary-foreground'
-                                                                    : 'text-muted-foreground hover:bg-accent/50'
-                                                                    }`}
-                                                            >
-                                                                <modulo.icon size={18} />
-                                                                {modulo.label}
-                                                            </button>
+                                                            <div key={modulo.id} className="relative group">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setActiveModuleTab(modulo.id)}
+                                                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all pr-14 ${activeModuleTab === modulo.id
+                                                                        ? 'bg-primary text-primary-foreground shadow-sm'
+                                                                        : 'text-muted-foreground hover:bg-accent/50'
+                                                                        } ${!modulo.tools.some(t => formData.permissoesCustom?.[t.id] && formData.permissoesCustom?.[t.id] !== 'bloqueado') && activeModuleTab !== modulo.id ? 'opacity-50 grayscale hover:grayscale-0' : ''}`}
+                                                                >
+                                                                    <div className={`transition-transform duration-300 ${activeModuleTab === modulo.id ? 'scale-110' : ''}`}>
+                                                                        <modulo.icon size={18} />
+                                                                    </div>
+                                                                    {modulo.label}
+                                                                </button>
+
+                                                                {/* Toggle de Ativar/Desativar Módulo com Cores de Status */}
+                                                                <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10" onClick={(e) => e.stopPropagation()}>
+                                                                    <label className="relative inline-flex items-center cursor-pointer group/toggle">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="sr-only peer"
+                                                                            checked={modulo.tools.some(t => formData.permissoesCustom?.[t.id] && formData.permissoesCustom?.[t.id] !== 'bloqueado')}
+                                                                            onChange={(e) => {
+                                                                                const isChecked = e.target.checked;
+                                                                                const newPerms = { ...formData.permissoesCustom };
+
+                                                                                modulo.tools.forEach(tool => {
+                                                                                    if (isChecked) {
+                                                                                        // Ativar: Seta visualizar como padrão
+                                                                                        if (!newPerms[tool.id] || newPerms[tool.id] === 'bloqueado') {
+                                                                                            newPerms[tool.id] = 'visualizar';
+                                                                                        }
+                                                                                    } else {
+                                                                                        // Desativar: Bloqueia tudo
+                                                                                        newPerms[tool.id] = 'bloqueado';
+                                                                                    }
+                                                                                });
+
+                                                                                setFormData(prev => ({ ...prev, permissoesCustom: newPerms }));
+                                                                            }}
+                                                                        />
+                                                                        <div className={`w-9 h-5 rounded-full transition-colors duration-300 ease-in-out border-2 border-transparent peer-focus:ring-2 peer-focus:ring-offset-1 peer-focus:ring-primary/20
+                                                                            ${modulo.tools.some(t => formData.permissoesCustom?.[t.id] && formData.permissoesCustom?.[t.id] !== 'bloqueado')
+                                                                                ? 'bg-emerald-500 peer-checked:after:translate-x-full peer-checked:after:border-white'
+                                                                                : 'bg-slate-300 dark:bg-slate-600 peer-checked:bg-emerald-500'}
+                                                                            after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all after:shadow-sm`}>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
                                                         ))}
                                                     </div>
                                                 )}

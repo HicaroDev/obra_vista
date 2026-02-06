@@ -18,6 +18,7 @@ import { Ferramentas } from './pages/Ferramentas';
 import { ModulesHub } from './pages/ModulesHub';
 import { Configuracoes } from './pages/Configuracoes';
 import { Layout } from './components/Layout';
+import { Toaster } from 'sonner';
 
 function App() {
   const { isAuthenticated, checkAuth } = useAuthStore();
@@ -33,6 +34,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Toaster richColors position="top-right" closeButton />
       <Layout>
         <Routes>
           <Route path="/" element={!activeModule ? <Navigate to="/modules" replace /> : <Dashboard />} />

@@ -81,3 +81,30 @@ export const canPerformAction = (page: string, action: 'criar' | 'editar' | 'exc
 
     return false;
 };
+
+import { SYSTEM_MODULES } from '../constants/modules';
+
+// Helper para verificar se usuário tem acesso a um módulo inteiro
+// Retorna true se pelo menos uma ferramenta do módulo não estiver 'bloqueada'
+export const hasModuleAccess = (moduleId: string, user?: Usuario | null): boolean => {
+    if (!user) return false;
+
+    // Admin tem acesso a tudo
+    if (user.tipo === 'admin' || user.permissoesCustom?.admin) return true;
+
+    // Encontrar definição do módulo
+    const moduleDef = SYSTEM_MODULES.find(m => m.id === moduleId);
+
+    // Fallback para legacy: Se o módulo não existe na definição nova mas o usuário tem acesso a página legada
+    if (!moduleDef) {
+        // Mapeamento simples de legado (ex: 'OPERATIONAL' -> tem acesso a 'obras'?)
+        // Mas o ideal é usar o ID correto. Se não achar, bloqueia por padrão.
+        return false;
+    }
+
+    // Verificar se existe alguma ferramenta neste módulo com acesso > bloqueado
+    return moduleDef.tools.some(tool => {
+        const permission = getPagePermission(tool.id, user);
+        return permission !== 'bloqueado';
+    });
+};

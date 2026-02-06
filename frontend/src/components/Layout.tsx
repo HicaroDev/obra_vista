@@ -11,7 +11,7 @@ import {
   PiChartLine, PiTag, PiIdentificationCard
 } from 'react-icons/pi';
 import { useAuthStore } from '../store/authStore';
-import { canAccessPage } from '../lib/permissions';
+import { canAccessPage, hasModuleAccess } from '../lib/permissions';
 import { cn } from '../utils/cn';
 import { SYSTEM_MODULES } from '../constants/modules';
 import { useRef, useEffect } from 'react';
@@ -43,6 +43,23 @@ export function Layout({ children }: LayoutProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [moduleMenuRef]);
+
+  // Redirecionamento de segurança: Se o módulo ativo não for acessível, sair dele
+  useEffect(() => {
+    // Só verifica se tiver usuário e módulo ativo
+    if (user && activeModule && !hasModuleAccess(activeModule, user)) {
+      // Tentar achar o primeiro módulo acessível
+      const firstAccessible = SYSTEM_MODULES.find(m => hasModuleAccess(m.id, user));
+      if (firstAccessible) {
+        setModule(firstAccessible.id as any);
+        // Redireciona para evitar rota 404/vazia
+        navigate('/');
+      } else {
+        setModule(null);
+        navigate('/modules');
+      }
+    }
+  }, [activeModule, user, setModule, navigate]);
 
   interface NavigationItem {
     name: string;
@@ -245,7 +262,7 @@ export function Layout({ children }: LayoutProps) {
                   <p className="text-xs text-gray-400">Selecione para navegar</p>
                 </div>
                 <div className="space-y-1 max-h-[400px] overflow-y-auto pr-1">
-                  {SYSTEM_MODULES.map((modulo) => (
+                  {SYSTEM_MODULES.filter(m => hasModuleAccess(m.id, user)).map((modulo) => (
                     <button
                       key={modulo.id}
                       onClick={() => {

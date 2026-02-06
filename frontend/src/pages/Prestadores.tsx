@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import type { Prestador } from '../types';
 import { prestadoresApi, especialidadesApi } from '../lib/api';
 import { maskCPF, maskCNPJ, maskPhone, removeMask, maskCurrency } from '../lib/masks';
@@ -96,18 +97,18 @@ export function Prestadores() {
         setProcessing(true); // Bloqueia
 
         // Validações básicas
-        if (!formData.nome.trim()) return alert('❌ Preencha o Nome Completo');
-        if (!formData.especialidade.trim()) return alert('❌ Selecione a Especialidade');
-        if (!formData.telefone.trim()) return alert('❌ Preencha o Telefone');
+        if (!formData.nome.trim()) return toast.warning('Preencha o Nome Completo');
+        if (!formData.especialidade.trim()) return toast.warning('Selecione a Especialidade');
+        if (!formData.telefone.trim()) return toast.warning('Preencha o Telefone');
 
         const telefoneLimpo = removeMask(formData.telefone);
 
         if (formData.tipoPessoa === 'PF') {
-            if (!formData.cpf.trim()) return alert('❌ Preencha o CPF');
-            if (removeMask(formData.cpf).length !== 11) return alert('❌ CPF inválido (11 dígitos)');
+            if (!formData.cpf.trim()) return toast.warning('Preencha o CPF');
+            if (removeMask(formData.cpf).length !== 11) return toast.warning('CPF inválido (11 dígitos)');
         } else {
-            if (!formData.cnpj.trim()) return alert('❌ Preencha o CNPJ');
-            if (removeMask(formData.cnpj).length !== 14) return alert('❌ CNPJ inválido (14 dígitos)');
+            if (!formData.cnpj.trim()) return toast.warning('Preencha o CNPJ');
+            if (removeMask(formData.cnpj).length !== 14) return toast.warning('CNPJ inválido (14 dígitos)');
         }
 
         try {
@@ -139,17 +140,18 @@ export function Prestadores() {
             if (editingPrestador) {
                 const response = await prestadoresApi.update(editingPrestador.id, dataToSend);
                 if (!response.success) throw new Error(response.error || 'Erro ao atualizar');
+                toast.success('Prestador atualizado com sucesso!');
             } else {
                 const response = await prestadoresApi.create(dataToSend);
                 if (!response.success) throw new Error(response.error || 'Erro ao criar');
+                toast.success('Prestador criado com sucesso!');
             }
 
             await loadPrestadores();
             handleCloseModal();
-            alert('✅ Prestador salvo com sucesso!');
         } catch (error: any) {
             console.error('Erro ao salvar:', error);
-            alert(`❌ Erro ao salvar: ${error.message}`);
+            toast.error(`Erro ao salvar: ${error.message}`);
         } finally {
             setProcessing(false); // Libera
         }
@@ -159,9 +161,11 @@ export function Prestadores() {
         if (!confirm('Tem certeza que deseja excluir este prestador?')) return;
         try {
             await prestadoresApi.delete(id);
+            toast.success('Prestador excluído com sucesso!');
             await loadPrestadores();
         } catch (error) {
             console.error('Erro ao excluir:', error);
+            toast.error('Erro ao excluir prestador.');
         }
     };
 

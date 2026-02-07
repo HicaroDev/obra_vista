@@ -370,6 +370,92 @@ export const logsApi = {
     return fetchApi<Log[]>(`/logs/atribuicao/${atribuicaoId}`);
   },
 };
+// ==================== ORÇAMENTO ====================
+
+export const orcamentoApi = {
+  get: async (obraId: number | string): Promise<ApiResponse<any>> => {
+    return fetchApi(`/orcamentos/${obraId}`);
+  },
+
+  importar: async (obraId: number | string, file: File): Promise<ApiResponse<any>> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = getAuthToken();
+    // Não usamos getAuthHeaders() padrão pois não queremos 'Content-Type': 'application/json'
+    // O browser setará o boundary do multipart automaticamente
+    const headers: HeadersInit = {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    };
+
+    const response = await fetch(`${API_URL}/orcamentos/${obraId}/importar`, {
+      method: 'POST',
+      body: formData,
+      headers: headers
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Erro na requisição' }));
+      throw new Error(error.error || error.message || 'Erro na requisição');
+    }
+
+    return response.json();
+  },
+
+  getTemplates: async (): Promise<ApiResponse<any[]>> => {
+    return fetchApi('/orcamentos/templates');
+  },
+
+  saveAsTemplate: async (data: { orcamentoId: number; nome?: string }): Promise<ApiResponse<any>> => {
+    return fetchApi('/orcamentos/templates/save-as', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  createFromTemplate: async (data: { obraId: number; templateId: number }): Promise<ApiResponse<any>> => {
+    return fetchApi('/orcamentos/templates/create-from-template', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
+// ==================== CRM ====================
+
+export const crmApi = {
+  leads: {
+    getAll: async (): Promise<ApiResponse<any[]>> => fetchApi('/crm/leads'),
+    getById: async (id: number): Promise<ApiResponse<any>> => fetchApi(`/crm/leads/${id}`),
+    create: async (data: any): Promise<ApiResponse<any>> => fetchApi('/crm/leads', { method: 'POST', body: JSON.stringify(data) }),
+    update: async (id: number, data: any): Promise<ApiResponse<any>> => fetchApi(`/crm/leads/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: async (id: number): Promise<ApiResponse<void>> => fetchApi(`/crm/leads/${id}`, { method: 'DELETE' }),
+  },
+  deals: {
+    getAll: async (): Promise<ApiResponse<any[]>> => fetchApi('/crm/deals'),
+    getById: async (id: number): Promise<ApiResponse<any>> => fetchApi(`/crm/deals/${id}`),
+    create: async (data: any): Promise<ApiResponse<any>> => fetchApi('/crm/deals', { method: 'POST', body: JSON.stringify(data) }),
+    update: async (id: number, data: any): Promise<ApiResponse<any>> => fetchApi(`/crm/deals/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: async (id: number): Promise<ApiResponse<void>> => fetchApi(`/crm/deals/${id}`, { method: 'DELETE' }),
+    updateStage: async (id: number, estagio: string): Promise<ApiResponse<any>> => fetchApi(`/crm/deals/${id}/estagio`, { method: 'PATCH', body: JSON.stringify({ estagio }) }),
+    win: async (id: number, data?: { dataInicio?: string }): Promise<ApiResponse<any>> => fetchApi(`/crm/deals/${id}/win`, { method: 'PATCH', body: JSON.stringify(data || {}) }),
+    lose: async (id: number, data: { motivo: string }): Promise<ApiResponse<any>> => fetchApi(`/crm/deals/${id}/lose`, { method: 'PATCH', body: JSON.stringify(data) }),
+  },
+  propostas: {
+    create: async (data: any): Promise<ApiResponse<any>> => fetchApi('/crm/propostas', { method: 'POST', body: JSON.stringify(data) }),
+    getByDeal: async (dealId: number): Promise<ApiResponse<any[]>> => fetchApi(`/crm/deals/${dealId}/propostas`),
+  },
+  interacoes: {
+    create: async (data: { dealId: number; tipo: string; descricao: string; data?: string }): Promise<ApiResponse<any>> => fetchApi('/crm/interacoes', { method: 'POST', body: JSON.stringify(data) }),
+    getByDeal: async (dealId: number): Promise<ApiResponse<any[]>> => fetchApi(`/crm/deals/${dealId}/interacoes`),
+  },
+  vistoria: {
+    getPerguntas: async (): Promise<ApiResponse<any[]>> => fetchApi('/crm/perguntas'),
+    getByDeal: async (dealId: number): Promise<ApiResponse<any>> => fetchApi(`/crm/deals/${dealId}/vistoria`),
+    save: async (data: { dealId: number; respostas: any }): Promise<ApiResponse<any>> => fetchApi('/crm/vistoria', { method: 'POST', body: JSON.stringify(data) }),
+  }
+};
+
 // ==================== CHECKLISTS ====================
 
 export const checklistsApi = {
@@ -714,3 +800,66 @@ export const backupApi = {
   }
 };
 
+// ==================== ENGENHARIA (BANCO DE DADOS) ====================
+
+export const insumosApi = {
+  getAll: async (params?: { tipo?: string; busca?: string; origem?: string }): Promise<ApiResponse<any[]>> => {
+    const query = new URLSearchParams(params as any).toString();
+    return fetchApi(`/insumos?${query}`);
+  },
+
+  getById: async (id: number): Promise<ApiResponse<any>> => {
+    return fetchApi(`/insumos/${id}`);
+  },
+
+  create: async (data: any): Promise<ApiResponse<any>> => {
+    return fetchApi('/insumos', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  update: async (id: number, data: any): Promise<ApiResponse<any>> => {
+    return fetchApi(`/insumos/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  delete: async (id: number): Promise<ApiResponse<void>> => {
+    return fetchApi<void>(`/insumos/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+export const composicoesApi = {
+  getAll: async (params?: { busca?: string; unidade?: string }): Promise<ApiResponse<any[]>> => {
+    const query = new URLSearchParams(params as any).toString();
+    return fetchApi(`/composicoes?${query}`);
+  },
+
+  getById: async (id: number): Promise<ApiResponse<any>> => {
+    return fetchApi(`/composicoes/${id}`);
+  },
+
+  create: async (data: any): Promise<ApiResponse<any>> => {
+    return fetchApi('/composicoes', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  update: async (id: number, data: any): Promise<ApiResponse<any>> => {
+    return fetchApi(`/composicoes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  delete: async (id: number): Promise<ApiResponse<void>> => {
+    return fetchApi<void>(`/composicoes/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};

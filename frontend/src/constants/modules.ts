@@ -38,7 +38,8 @@ export const SYSTEM_MODULES: ModuleDefinition[] = [
             { id: 'obras', label: 'Obras', description: 'Cadastro e gestão de obras' },
             { id: 'equipes', label: 'Equipes', description: 'Gestão de equipes e alocações', icon: PiUsers },
             { id: 'kanban', label: 'Kanban', description: 'Gestão visual de tarefas' },
-            { id: 'ferramentas', label: 'Ferramentas', description: 'Gestão de patrimônio', icon: PiWrench }
+            { id: 'ferramentas', label: 'Ferramentas', description: 'Gestão de patrimônio', icon: PiWrench },
+            { id: 'catalogos', label: 'Catálogos', description: 'Gestão de Insumos e Composições', icon: PiPackage }
         ]
     },
     {

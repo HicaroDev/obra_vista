@@ -27,6 +27,7 @@ model Usuarios {
   tarefa_ocorrencias tarefa_ocorrencias[]
   usuario_roles      usuario_roles[]
   permissoes_custom  Json?                @default("{}")
+  crm_interacoes     CrmInteracao[]
 
   @@index([email], map: "idx_usuarios_email")
   @@map("usuarios")
@@ -129,6 +130,83 @@ model Obras {
   @@map("obras")
   @@schema("public")
   movimentacoesFerramentas MovimentacaoFerramentas[]
+  orcamento_detalhado Orcamento[] // Alterado para 1:N para permitir templates e versões
+  
+  // CRM Relations
+  crmDeal     CrmDeal?
+  leadId      Int?
+  lead        CrmLead? @relation(fields: [leadId], references: [id])
+}
+
+model Orcamento {
+  id        Int      @id @default(autoincrement())
+  obraId    Int?     
+  obra      Obras?   @relation(fields: [obraId], references: [id], onDelete: Cascade)
+  nome      String   @db.VarChar(255)
+  valorTotal Decimal? @default(0) @db.Decimal(15, 2)
+  bdi       Decimal? @default(0) @db.Decimal(5, 2) // Percentual, ex: 25.00
+  dataBase  DateTime? @db.Date
+  isTemplate Boolean  @default(false)
+  
+  itens     OrcamentoItem[]
+  
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  
+  @@map("orcamentos")
+  @@schema("public")
+}
+
+model OrcamentoItem {
+  id             Int        @id @default(autoincrement())
+  orcamentoId    Int
+  orcamento      Orcamento  @relation(fields: [orcamentoId], references: [id], onDelete: Cascade)
+  
+  wbs            String?    @db.VarChar(50) // Hierarquia: 1, 1.1, 1.1.2
+  codigo         String?    @db.VarChar(50) // Código da composição: ADM-01
+  descricao      String
+  unidade        String?    @db.VarChar(20)
+  quantidade     Decimal?   @default(0) @db.Decimal(12, 4)
+  
+  // Custos Unitários
+  custoMaterial    Decimal?   @default(0) @db.Decimal(12, 2)
+  custoMaoDeObra   Decimal?   @default(0) @db.Decimal(12, 2)
+  custoEquipamento Decimal?   @default(0) @db.Decimal(12, 2)
+  
+  valorUnitario  Decimal?   @default(0) @db.Decimal(12, 2) // Soma dos custos diretos unitários
+  valorTotal     Decimal?   @default(0) @db.Decimal(15, 2) // Com BDI
+  
+  tipo           String     @default("composicao") @db.VarChar(20) // "etapa" (agrupador) ou "composicao" (item)
+  
+  insumos        ComposicaoInsumo[]
+  
+  createdAt      DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime   @default(now()) @updatedAt @db.Timestamp(6)
+  
+  @@index([orcamentoId], map: "idx_orcamento_itens_orcamento")
+  @@map("orcamento_itens")
+  @@schema("public")
+}
+
+model ComposicaoInsumo {
+  id              Int           @id @default(autoincrement())
+  orcamentoItemId Int
+  orcamentoItem   OrcamentoItem @relation(fields: [orcamentoItemId], references: [id], onDelete: Cascade)
+  
+  tipo            String        @db.VarChar(50) // "Material", "Mão de Obra", "Equipamento"
+  codigo          String?       @db.VarChar(50)
+  descricao       String
+  unidade         String?       @db.VarChar(20)
+  
+  quantidade      Decimal?      @default(0) @db.Decimal(12, 4) // Coeficiente de consumo
+  custoUnitario   Decimal?      @default(0) @db.Decimal(12, 2)
+  custoTotal      Decimal?      @default(0) @db.Decimal(12, 2)
+  
+  createdAt       DateTime      @default(now()) @db.Timestamp(6)
+  
+  @@index([orcamentoItemId], map: "idx_composicao_insumos_item")
+  @@map("composicao_insumos")
+  @@schema("public")
 }
 
 model Atribuicoes {
@@ -437,5 +515,188 @@ model MovimentacaoFerramentas {
   updatedAt     DateTime @default(now()) @updatedAt @db.Timestamp(6)
 
   @@map("movimentacao_ferramentas")
+  @@schema("public")
+}
+
+model CrmLead {
+  id          Int       @id @default(autoincrement())
+  nome        String    @db.VarChar(255)
+  empresa     String?   @db.VarChar(255)
+  email       String?   @db.VarChar(255)
+  telefone    String?   @db.VarChar(50)
+  origem      String?   @db.VarChar(50)
+  status      String    @default("novo") @db.VarChar(20)
+  tipo        String    @default("PF") @db.VarChar(2)
+  documento   String?   @db.VarChar(20)
+  
+  endereco    String?   @db.Text
+  observacoes String?   @db.Text
+  
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime  @default(now()) @updatedAt @db.Timestamp(6)
+  
+  deals       CrmDeal[]
+  obras       Obras[]
+  
+  @@map("crm_leads")
+  @@schema("public")
+}
+
+model CrmDeal {
+  id          Int       @id @default(autoincrement())
+  titulo      String    @db.VarChar(255)
+  
+  leadId      Int
+  lead        CrmLead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  obraId      Int?      @unique
+  obra        Obras?    @relation(fields: [obraId], references: [id])
+  
+  valorEstimado Decimal? @default(0) @db.Decimal(15, 2)
+  probabilidade Int?     @default(0)
+  
+  estagio     String    @default("prospeccao") @db.VarChar(50) 
+  
+  dataFechamentoPrevista DateTime? @db.Date
+  
+  propostas   Proposta[]
+  
+  interacoes  CrmInteracao[]
+  vistoria    CrmVistoria?
+  
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime  @default(now()) @updatedAt @db.Timestamp(6)
+  
+  @@map("crm_deals")
+  @@schema("public")
+}
+
+model Proposta {
+  id          Int       @id @default(autoincrement())
+  dealId      Int
+  deal        CrmDeal   @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  
+  versao      Int       @default(1)
+  valor       Decimal   @db.Decimal(15, 2)
+  dataEnvio   DateTime  @default(now()) @db.Timestamp(6)
+  validade    DateTime? @db.Date
+  
+  status      String    @default("enviada") @db.VarChar(20)
+  arquivoUrl  String?   @db.VarChar(500)
+  
+  observacoes String?   @db.Text
+  
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime  @default(now()) @updatedAt @db.Timestamp(6)
+  
+  @@map("propostas")
+  @@schema("public")
+}
+
+model CrmInteracao {
+  id          Int      @id @default(autoincrement())
+  dealId      Int
+  deal        CrmDeal  @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  
+  tipo        String   @db.VarChar(50) // nota, ligacao, email, reuniao, sistema
+  descricao   String   @db.Text
+  
+  usuarioId   Int
+  usuario     Usuarios @relation(fields: [usuarioId], references: [id])
+  
+  data        DateTime @default(now()) @db.Timestamp(6)
+  
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  
+  @@map("crm_interacoes")
+  @@schema("public")
+}
+
+model CrmVistoria {
+  id          Int      @id @default(autoincrement())
+  dealId      Int      @unique
+  deal        CrmDeal  @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  
+  respostas   Json     // { "pergunta_id": "valor", ... }
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  @@map("crm_vistorias")
+  @@schema("public")
+}
+
+model CrmPergunta {
+  id          Int      @id @default(autoincrement())
+  texto       String   @db.VarChar(500)
+  tipo        String   @db.VarChar(50) // numero, texto, boolean, selecao
+  opcoes      Json?    // Para tipo selecao
+  categoria   String   @default("Geral") @db.VarChar(100)
+  ordem       Int      @default(0)
+  
+  // Mapeamento para orçamento
+  slug        String   @unique @db.VarChar(100) // Ex: 'm2_parede'
+  
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  @@map("crm_perguntas")
+  @@schema("public")
+}
+
+// ==================== ENGENHARIA & ORÇAMENTO (BANCO DE DADOS) ====================
+
+model InsumoMaster {
+  id            Int      @id @default(autoincrement())
+  codigo        String?  @unique @db.VarChar(50) // Ex: SINAPI-1234
+  descricao     String
+  unidade       String?  @db.VarChar(20)
+  tipo          String   @default("material") @db.VarChar(50) // material, mao_de_obra, equipamento, servico
+  custoPadrao   Decimal? @default(0) @db.Decimal(12, 2)
+  origem        String?  @default("proprio") @db.VarChar(50) // SINAPI, ORSE, PROPRIO
+  
+  updatedAt     DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  
+  itensComposicao ComposicaoItemMaster[]
+
+  @@map("insumos_master")
+  @@schema("public")
+}
+
+model ComposicaoMaster {
+  id            Int      @id @default(autoincrement())
+  codigo        String   @unique @db.VarChar(50) // Ex: CPU-001
+  descricao     String
+  unidade       String   @db.VarChar(20)
+  tipo          String?  @default("proprio") @db.VarChar(50)
+  
+  itens         ComposicaoItemMaster[] @relation("ComposicaoPai") // Itens que fazem parte desta composição
+  usadaEm       ComposicaoItemMaster[] @relation("ComposicaoFilha") // Onde esta composição é usada como sub-item
+
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  @@map("composicoes_master")
+  @@schema("public")
+}
+
+model ComposicaoItemMaster {
+  id            Int               @id @default(autoincrement())
+  
+  composicaoId  Int
+  composicao    ComposicaoMaster  @relation("ComposicaoPai", fields: [composicaoId], references: [id], onDelete: Cascade)
+  
+  insumoId      Int?
+  insumo        InsumoMaster?     @relation(fields: [insumoId], references: [id])
+  
+  filhaId       Int?
+  composicaoFilha ComposicaoMaster? @relation("ComposicaoFilha", fields: [filhaId], references: [id])
+  
+  coeficiente   Decimal           @db.Decimal(12, 4) // Quantidade necessária para 1 unidade da composição pai
+  
+  createdAt     DateTime          @default(now()) @db.Timestamp(6)
+
+  @@index([composicaoId], map: "idx_comp_master_pai")
+  @@map("composicao_itens_master")
   @@schema("public")
 }

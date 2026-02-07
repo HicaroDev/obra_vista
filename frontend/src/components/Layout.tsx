@@ -4,11 +4,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useModuleStore } from '../store/moduleStore';
 import {
   PiList, PiX, PiSignOut,
-  PiHouse, PiUsersThree, PiBuildings, PiKanban, PiCalendarCheck,
-  PiBriefcase, PiFileText, PiUserGear, PiGear,
-  PiCaretDown, PiCaretRight, PiFolderPlus, PiPackage, PiScales, PiWrench,
-  PiSquaresFour, PiCurrencyDollar, PiHandshake, PiArrowLeft, PiArrowsLeftRight, PiHardHat,
-  PiChartLine, PiTag, PiIdentificationCard
+  PiBuildings, PiKanban, PiCalendarCheck,
+  PiBriefcase, PiGear,
+  PiCaretDown, PiCaretRight, PiPackage, PiScales, PiWrench,
+  PiSquaresFour, PiCurrencyDollar, PiHandshake,
+  PiChartLine, PiTag, PiIdentificationCard, PiUsersThree
 } from 'react-icons/pi';
 import { useAuthStore } from '../store/authStore';
 import { canAccessPage, hasModuleAccess } from '../lib/permissions';
@@ -84,6 +84,7 @@ export function Layout({ children }: LayoutProps) {
     operacional: [
       { name: 'Obras', href: '/obras', icon: PiBuildings, page: 'obras' },
       { name: 'Kanban', href: '/kanban', icon: PiKanban, page: 'kanban' },
+      { name: 'Catálogos', href: '/catalogos', icon: PiPackage, page: 'catalogos' },
       { name: 'Equipes', href: '/equipes', icon: PiUsersThree, page: 'equipes' },
       { name: 'Ferramentas', href: '/ferramentas', icon: PiWrench, page: 'ferramentas' },
       { name: 'Ponto', href: '/frequencia', icon: PiCalendarCheck, page: 'kanban' },
@@ -95,30 +96,10 @@ export function Layout({ children }: LayoutProps) {
     ],
     crm: [
       { name: 'Pipeline', href: '/crm', icon: PiHandshake, page: 'crm' },
+      { name: 'Clientes (Leads)', href: '/crm/leads', icon: PiUsersThree, page: 'crm' },
     ],
     // Fallback
   };
-
-  // Função auxiliar recursiva para verificar se o path existe na árvore de navegação
-  const pathExistsInItems = (items: NavigationItem[], path: string): boolean => {
-    return items.some(item =>
-      item.href === path || (item.children && pathExistsInItems(item.children, path))
-    );
-  };
-
-  // Sincronizar Módulo com a URL atual
-  useEffect(() => {
-    if (location.pathname === '/modules' || location.pathname === '/') return;
-
-    for (const [modId, items] of Object.entries(menusByModule)) {
-      if (pathExistsInItems(items, location.pathname)) {
-        if (activeModule !== modId) {
-          setModule(modId as any);
-        }
-        break;
-      }
-    }
-  }, [location.pathname, activeModule, setModule]);
 
   // Seleciona menu com fallback
   const currentMenu = menusByModule[activeModule || 'gestao'] || menusByModule['operacional'] || [];

@@ -17,8 +17,12 @@ import {
     PiUser as User
 } from 'react-icons/pi';
 
+import { useNavigate } from 'react-router-dom';
+
 export function Obras() {
     const { user } = useAuthStore();
+    const navigate = useNavigate();
+
     const [obras, setObras] = useState<Obra[]>([]);
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
@@ -249,7 +253,8 @@ export function Obras() {
                     {filteredObras.map((obra) => (
                         <div
                             key={obra.id}
-                            className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow"
+                            onClick={() => navigate(`/obras/${obra.id}`)}
+                            className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow cursor-pointer relative"
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center gap-3">
@@ -298,10 +303,13 @@ export function Obras() {
                             )}
 
                             {(canPerformAction('obras', 'editar', user) || canPerformAction('obras', 'excluir', user)) && (
-                                <div className="flex gap-2 pt-4 border-t border-border">
+                                <div className="flex gap-2 pt-4 border-t border-border" onClick={(e) => e.stopPropagation()}>
                                     {canPerformAction('obras', 'editar', user) && (
                                         <button
-                                            onClick={() => handleEdit(obra)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEdit(obra);
+                                            }}
                                             className="flex-1 px-3 py-2 bg-accent hover:bg-accent/80 text-foreground rounded-lg transition-colors flex items-center justify-center gap-2"
                                         >
                                             <Edit2 size={16} />
@@ -310,7 +318,10 @@ export function Obras() {
                                     )}
                                     {canPerformAction('obras', 'excluir', user) && (
                                         <button
-                                            onClick={() => handleDelete(obra.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDelete(obra.id);
+                                            }}
                                             className="px-3 py-2 bg-destructive/10 hover:bg-destructive/20 text-destructive rounded-lg transition-colors"
                                         >
                                             <Trash2 size={16} />

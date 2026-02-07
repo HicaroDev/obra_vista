@@ -5,9 +5,12 @@ import { useAuthStore } from './store/authStore';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Obras } from './pages/Obras';
+import { ObraDetalhes } from './pages/ObraDetalhes';
 import { Prestadores } from './pages/Prestadores';
 import { Equipes } from './pages/Equipes';
 import { Kanban } from './pages/Kanban';
+import { CrmBoard } from './pages/CrmBoard';
+import { Catalogos } from './pages/Catalogos';
 import { Relatorios } from './pages/Relatorios';
 import { Frequencia } from './pages/Frequencia';
 import { Usuarios } from './pages/Usuarios';
@@ -17,6 +20,7 @@ import { Unidades } from './pages/Unidades';
 import { Ferramentas } from './pages/Ferramentas';
 import { ModulesHub } from './pages/ModulesHub';
 import { Configuracoes } from './pages/Configuracoes';
+import { Leads } from './pages/Leads';
 import { Layout } from './components/Layout';
 import { Toaster } from 'sonner';
 
@@ -39,9 +43,13 @@ function App() {
         <Routes>
           <Route path="/" element={!activeModule ? <Navigate to="/modules" replace /> : <Dashboard />} />
           <Route path="/obras" element={<Obras />} />
+          <Route path="/obras/:id" element={<ObraDetalhes />} />
           <Route path="/prestadores" element={<Prestadores />} />
           <Route path="/equipes" element={<Equipes />} />
           <Route path="/kanban" element={<Kanban />} />
+          <Route path="/crm" element={<CrmBoard />} />
+          <Route path="/crm/leads" element={<Leads />} />
+          <Route path="/catalogos" element={<Catalogos />} />
           <Route path="/relatorios" element={<Relatorios />} />
           <Route path="/frequencia" element={<Frequencia />} />
           <Route path="/usuarios" element={<Usuarios />} />

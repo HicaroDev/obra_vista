@@ -107,7 +107,11 @@ app.use('/api/produtos', produtosRoutes);
 app.use('/api/unidades', unidadesRoutes);
 app.use('/api/frequencia', frequenciaRoutes);
 app.use('/api/ferramentas', ferramentasRoutes);
+app.use('/api/orcamentos', require('./routes/orcamento.routes'));
 app.use('/api/backup', require('./routes/backup.routes')); // Nova rota de backup
+app.use('/api/crm', require('./routes/crm.routes')); // Rotas CRM
+app.use('/api/insumos', require('./routes/insumo.routes')); // Rotas Insumos Master
+app.use('/api/composicoes', require('./routes/composicao.routes')); // Rotas Composições Master
 
 // ==================== ERROR HANDLING ====================
 

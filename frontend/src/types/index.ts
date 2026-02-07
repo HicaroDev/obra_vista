@@ -295,3 +295,90 @@ export interface FrequenciaDiaria {
   obraId?: number;
   nomeObra?: string;
 }
+
+// ==================== ORÇAMENTO ====================
+
+export interface Orcamento {
+  id: number;
+  obraId: number;
+  nome: string;
+  valorTotal: number;
+  bdi: number;
+  dataBase?: string;
+  itens: OrcamentoItem[];
+}
+
+export interface OrcamentoItem {
+  id: number;
+  wbs: string;
+  codigo?: string;
+  descricao: string;
+  unidade?: string;
+  quantidade: number;
+  custoMaterial: number;
+  custoMaoDeObra: number;
+  custoEquipamento: number;
+  valorUnitario: number;
+  valorTotal: number;
+  tipo: 'etapa' | 'composicao';
+  insumos?: ComposicaoInsumo[];
+}
+
+export interface ComposicaoInsumo {
+  id: number;
+  orcamentoItemId: number;
+  tipo: 'Material' | 'Mão de Obra' | 'Equipamento' | 'Outros';
+  codigo?: string;
+  descricao: string;
+  unidade?: string;
+  quantidade: number;
+  custoUnitario: number;
+  custoTotal: number;
+}
+
+// ==================== CRM ====================
+
+export interface CrmLead {
+  id: number;
+  nome: string;
+  empresa?: string;
+  email?: string;
+  telefone?: string;
+  origem?: string;
+  status: 'novo' | 'qualificado' | 'cliente' | 'inativo';
+  tipo: 'PF' | 'PJ';
+  documento?: string;
+  endereco?: string;
+  observacoes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmDeal {
+  id: number;
+  titulo: string;
+  leadId: number;
+  lead?: CrmLead;
+  obraId?: number;
+  obra?: Obra;
+  valorEstimado: number;
+  probabilidade: number;
+  estagio: 'prospeccao' | 'qualificacao' | 'proposta' | 'negociacao' | 'fechado_ganho' | 'fechado_perdido';
+  dataFechamentoPrevista?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Proposta {
+  id: number;
+  dealId: number;
+  deal?: CrmDeal;
+  versao: number;
+  valor: number;
+  dataEnvio: string;
+  validade?: string;
+  status: 'rascunho' | 'enviada' | 'aceita' | 'rejeitada';
+  arquivoUrl?: string;
+  observacoes?: string;
+  createdAt: string;
+}

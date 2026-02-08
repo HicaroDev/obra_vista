@@ -5,8 +5,8 @@ import { crmApi } from '../lib/api';
 import type { CrmDeal } from '../types';
 import { PiPlus, PiSpinner, PiMoney, PiUser, PiBuilding } from 'react-icons/pi';
 import { cn } from '../utils/cn';
-import { DealDetailsModal } from '../components/crm/DealDetailsModal';
 import { NewDealModal } from '../components/crm/NewDealModal';
+import { useNavigate } from 'react-router-dom';
 
 const COLUMNS = [
     { id: 'prospeccao', title: 'Prospecção', color: 'bg-blue-100 text-blue-700' },
@@ -20,10 +20,21 @@ const COLUMNS = [
 export function CrmBoard() {
     const [deals, setDeals] = useState<CrmDeal[]>([]);
     const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState<any>(null);
 
     useEffect(() => {
         loadDeals();
+        loadStats();
     }, []);
+
+    const loadStats = async () => {
+        try {
+            const res = await crmApi.stats.get();
+            if (res.success) setStats(res.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const loadDeals = async () => {
         try {
@@ -68,6 +79,7 @@ export function CrmBoard() {
                 }
                 await crmApi.deals.win(dealId);
                 toast.success('Parabéns! Negócio ganho.');
+                loadStats();
             } else if (newStage === 'perdido') {
                 const motivo = window.prompt("Informe o motivo da perda:");
                 if (motivo === null) {
@@ -76,8 +88,10 @@ export function CrmBoard() {
                 }
                 await crmApi.deals.lose(dealId, { motivo });
                 toast.success('Negócio marcado como perdido.');
+                loadStats();
             } else {
                 await crmApi.deals.updateStage(dealId, newStage);
+                loadStats();
             }
             loadDeals(); // Refresh to ensure everything is synced (especially after win/lose)
         } catch (error) {
@@ -91,15 +105,13 @@ export function CrmBoard() {
         return deals.filter(deal => deal.estagio === stage);
     };
 
+    const navigate = useNavigate();
     const money = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
-    const [selectedDealId, setSelectedDealId] = useState<number | null>(null);
-    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
     const [isNewDealModalOpen, setIsNewDealModalOpen] = useState(false);
 
     const handleDealClick = (dealId: number) => {
-        setSelectedDealId(dealId);
-        setIsDetailsModalOpen(true);
+        navigate(`/crm/${dealId}`);
     };
 
     if (loading) {
@@ -110,14 +122,44 @@ export function CrmBoard() {
         <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
             {/* Header */}
             <div className="px-6 py-4 bg-white border-b border-gray-200 flex justify-between items-center shrink-0">
-                <h1 className="text-xl font-bold text-gray-800">Pipeline de Vendas</h1>
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-600 text-white rounded-lg shadow-lg shadow-blue-100">
+                        <PiMoney size={24} />
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-800">Pipeline de Vendas</h1>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Gestão Comercial Pro</p>
+                    </div>
+                </div>
                 <button
                     onClick={() => setIsNewDealModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 text-sm"
                 >
-                    <PiPlus /> Novo Negócio
+                    <PiPlus /> NOVO NEGÓCIO
                 </button>
             </div>
+
+            {/* Dashboard Mini */}
+            {stats && (
+                <div className="px-6 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 bg-white border-b border-gray-100 shrink-0">
+                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Total no Funil</p>
+                        <p className="text-xl font-black text-blue-600">{money(stats.valor_total_pipeline)}</p>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Em Negociação</p>
+                        <p className="text-xl font-black text-orange-600">{money(stats.valor_em_negociacao)}</p>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Taxa de Conversão</p>
+                        <p className="text-xl font-black text-emerald-600">{stats.total > 0 ? ((stats.ganhos / stats.total) * 100).toFixed(1) : 0}%</p>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Vendas Perdidas</p>
+                        <p className="text-xl font-black text-red-600">{stats.perdidos}</p>
+                    </div>
+                </div>
+            )}
 
             {/* Board */}
             <div className="flex-1 overflow-x-auto overflow-y-hidden">
@@ -206,12 +248,6 @@ export function CrmBoard() {
                         ))}
                     </div>
                 </DragDropContext>
-
-                <DealDetailsModal
-                    open={isDetailsModalOpen}
-                    onClose={() => setIsDetailsModalOpen(false)}
-                    dealId={selectedDealId}
-                />
 
                 <NewDealModal
                     open={isNewDealModalOpen}

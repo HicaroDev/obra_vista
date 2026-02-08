@@ -155,25 +155,26 @@ Obras ── Atribuicoes ── Logs
 - [x] Layout responsivo com sidebar
 - [x] Modo escuro/claro
 - [x] Dashboard com estatísticas
+- [x] Kanban Board com drag-and-drop
+- [x] Exportação de Propostas em PDF
+- [x] Pipeline de Vendas (CRM)
 - [x] API client completo
 - [x] Gerenciamento de estado (Zustand)
 - [x] TypeScript types completos
 
 ### 🔄 Em Desenvolvimento (Backend)
-- [ ] API REST completa
-- [ ] Autenticação JWT
-- [ ] CRUD de Equipes
-- [ ] CRUD de Obras
-- [ ] CRUD de Atribuições
-- [ ] Sistema de Logs
+- [x] API REST completa
+- [x] Autenticação JWT
+- [x] CRUD de Equipes
+- [x] CRUD de Obras
+- [x] CRUD de Atribuições
+- [x] Sistema de Logs
+- [x] Gerador de PDF Profissional
 
 ### 📋 Planejadas
-- [ ] Kanban Board com drag-and-drop
-- [ ] Gerenciamento de equipes
-- [ ] Upload de arquivos
-- [ ] Exportação PDF
+- [ ] Upload de arquivos/fotos (Vistoria)
 - [ ] Notificações em tempo real
-- [ ] Gráficos e relatórios
+- [ ] Gráficos avançados de BI
 - [ ] PWA completo
 
 ---

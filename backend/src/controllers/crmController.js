@@ -751,3 +751,207 @@ exports.createOrUpdateVistoria = async (req, res, next) => {
     }
 };
 
+// ==================== PDF & INDICADORES ====================
+
+const PdfPrinter = require('pdfmake');
+const path = require('path');
+
+exports.generatePropostaPDF = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const proposta = await prisma.proposta.findUnique({
+            where: { id: parseInt(id) },
+            include: {
+                deal: {
+                    include: {
+                        lead: true,
+                        obra: {
+                            include: {
+                                orcamento: {
+                                    where: { isTemplate: false },
+                                    include: {
+                                        itens: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!proposta) return res.status(404).json({ success: false, message: 'Proposta não encontrada' });
+
+        const deal = proposta.deal;
+        const lead = deal.lead;
+        const orcamento = deal.obra?.orcamento?.[0];
+
+        // Fontes do PDF (Pega diretamente do node_modules para garantir que funcione)
+        const fonts = {
+            Roboto: {
+                normal: path.join(process.cwd(), 'node_modules', 'pdfmake', 'fonts', 'Roboto', 'Roboto-Regular.ttf'),
+                bold: path.join(process.cwd(), 'node_modules', 'pdfmake', 'fonts', 'Roboto', 'Roboto-Medium.ttf'),
+                italics: path.join(process.cwd(), 'node_modules', 'pdfmake', 'fonts', 'Roboto', 'Roboto-Italic.ttf'),
+                bolditalics: path.join(process.cwd(), 'node_modules', 'pdfmake', 'fonts', 'Roboto', 'Roboto-MediumItalic.ttf')
+            }
+        };
+
+        const printer = new PdfPrinter(fonts);
+
+        const docDefinition = {
+            content: [
+                { text: 'PROPOSTA COMERCIAL', style: 'header', alignment: 'center' },
+                { text: `Proposta #${proposta.id} - Versão ${proposta.versao}`, alignment: 'center', margin: [0, 0, 0, 20], fontSize: 10, color: '#6b7280' },
+
+                {
+                    columns: [
+                        {
+                            width: '50%',
+                            text: [
+                                { text: 'CLIENTE / LEAD\n', style: 'subheader' },
+                                { text: `${lead.nome}\n`, bold: true },
+                                { text: `${lead.empresa || 'Pessoa Física'}\n` },
+                                { text: `${lead.email || ''}\n` },
+                                { text: `${lead.telefone || ''}` }
+                            ]
+                        },
+                        {
+                            width: '50%',
+                            text: [
+                                { text: 'DADOS DO PROJETO\n', style: 'subheader' },
+                                { text: `${deal.titulo}\n`, bold: true },
+                                { text: `${deal.obra?.endereco || 'Local não informado'}` }
+                            ],
+                            alignment: 'right'
+                        }
+                    ]
+                },
+
+                { text: '\n' },
+                { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#e5e7eb' }] },
+                { text: '\n' },
+
+                { text: 'RESUMO DOS ITENS ORÇADOS', style: 'subheader', margin: [0, 10, 0, 10] },
+
+                {
+                    table: {
+                        headerRows: 1,
+                        widths: ['*', 'auto', 'auto', 'auto'],
+                        body: [
+                            [
+                                { text: 'Item', style: 'tableHeader' },
+                                { text: 'Qtd', style: 'tableHeader' },
+                                { text: 'Un', style: 'tableHeader' },
+                                { text: 'Total Sugerido', style: 'tableHeader', alignment: 'right' }
+                            ],
+                            ...(orcamento?.itens.map(item => [
+                                item.descricao,
+                                Number(item.quantidade).toFixed(2),
+                                item.unidade || 'un',
+                                { text: Number(item.valorTotal).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), alignment: 'right' }
+                            ]) || [['Nenhum item orçado', '-', '-', '-']])
+                        ]
+                    },
+                    layout: {
+                        hLineWidth: (i, node) => (i === 0 || i === node.table.body.length) ? 0 : 0.5,
+                        vLineWidth: () => 0,
+                        hLineColor: () => '#f3f4f6',
+                        paddingLeft: () => 8,
+                        paddingRight: () => 8,
+                        paddingTop: () => 6,
+                        paddingBottom: () => 6
+                    }
+                },
+
+                { text: '\n' },
+                {
+                    columns: [
+                        { width: '*', text: '' },
+                        {
+                            width: 'auto',
+                            table: {
+                                body: [
+                                    [
+                                        { text: 'VALOR TOTAL FINAL:', fontSize: 12, bold: true, margin: [0, 5, 10, 0] },
+                                        { text: Number(proposta.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), style: 'totalValue' }
+                                    ]
+                                ]
+                            },
+                            layout: 'noBorders'
+                        }
+                    ]
+                },
+
+                { text: '\n\n' },
+                { text: 'OBSERVAÇÕES E CONDIÇÕES', style: 'subheader' },
+                { text: proposta.observacoes || 'Sem observações adicionais.', fontSize: 10, color: '#4b5563' },
+
+                { text: '\n' },
+                { text: `Proposta válida até: ${proposta.validade ? new Date(proposta.validade).toLocaleDateString('pt-BR') : 'A consultar'}`, fontSize: 10, italic: true, color: '#ef4444' },
+
+                { text: '\n\n\n\n' },
+                {
+                    columns: [
+                        {
+                            stack: [
+                                { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 180, y2: 0, lineWidth: 1 }] },
+                                { text: 'Assinatura do Cliente', margin: [0, 5, 0, 0], fontSize: 9 }
+                            ],
+                            alignment: 'center'
+                        },
+                        {
+                            stack: [
+                                { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 180, y2: 0, lineWidth: 1 }] },
+                                { text: 'Responsável Comercial\nObra Vista SaaS', margin: [0, 5, 0, 0], fontSize: 9 }
+                            ],
+                            alignment: 'center'
+                        }
+                    ],
+                    margin: [0, 50, 0, 0]
+                }
+            ],
+            styles: {
+                header: { fontSize: 24, bold: true, color: '#2563eb' },
+                subheader: { fontSize: 11, bold: true, margin: [0, 10, 0, 5], color: '#1f2937', uppercase: true },
+                tableHeader: { bold: true, fontSize: 10, color: 'white', fillColor: '#2563eb' },
+                totalValue: { fontSize: 18, bold: true, color: '#2563eb' }
+            },
+            defaultStyle: {
+                font: 'Roboto'
+            }
+        };
+
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=proposta_comercial_${proposta.id}.pdf`);
+
+        pdfDoc.pipe(res);
+        pdfDoc.end();
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getStats = async (req, res, next) => {
+    try {
+        const deals = await prisma.crmDeal.findMany();
+
+        const stats = {
+            total: deals.length,
+            ganhos: deals.filter(d => d.estagio === 'ganho').length,
+            perdidos: deals.filter(d => d.estagio === 'perdido').length,
+            em_aberto: deals.filter(d => d.estagio !== 'ganho' && d.estagio !== 'perdido').length,
+            valor_total_pipeline: deals.reduce((acc, d) => acc + Number(d.valorEstimado || 0), 0),
+            valor_em_negociacao: deals.filter(d => d.estagio === 'negociacao')
+                .reduce((acc, d) => acc + Number(d.valorEstimado || 0), 0)
+        };
+
+        res.json({ success: true, data: stats });
+    } catch (error) {
+        next(error);
+    }
+};
+

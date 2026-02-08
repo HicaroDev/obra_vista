@@ -6,19 +6,19 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                      FRONTEND (React)                        │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │   Login/     │  │  Dashboard   │  │    Kanban    │      │
-│  │   Cadastro   │  │  Estatísticas│  │  Drag & Drop │      │
+│  │   CRM /      │  │  Dashboard   │  │    Kanban    │      │
+│  │   Propostas  │  │  Estatísticas│  │  Drag & Drop │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
 │                                                               │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │   Equipes    │  │    Obras     │  │   Relatórios │      │
-│  │   CRUD       │  │    CRUD      │  │   PDF Export │      │
+│  │   Equipes    │  │    Obras     │  │   Vistoria   │      │
+│  │   CRUD       │  │    CRUD      │  │   Técnica    │      │
 │  └──────────────┘  └──────────────┘  └──────────────┘      │
 │                                                               │
 │  Zustand Stores: Auth | Theme | Equipes | Obras | Kanban    │
 └───────────────────────────┬─────────────────────────────────┘
                             │
-                    HTTP REST API (JSON)
+                    HTTP REST API (JSON / PDF)
                             │
 ┌───────────────────────────▼─────────────────────────────────┐
 │                    BACKEND (Node.js + Express)               │
@@ -27,18 +27,15 @@
 │  │              Middleware Layer                        │    │
 │  │  • JWT Authentication                                │    │
 │  │  • Role-based Authorization                          │    │
-│  │  • Request Validation                                │    │
-│  │  • Error Handling                                    │    │
-│  │  • CORS Policy                                       │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                                                               │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │   Auth   │  │ Equipes  │  │  Obras   │  │Atribuições│   │
+│  │   Auth   │  │   CRM    │  │  Obras   │  │Atribuições│   │
 │  │Controller│  │Controller│  │Controller│  │Controller │   │
 │  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘   │
 │       │             │              │              │          │
 │  ┌────▼─────┐  ┌───▼──────┐  ┌───▼──────┐  ┌───▼──────┐   │
-│  │   Auth   │  │ Equipes  │  │  Obras   │  │Atribuições│   │
+│  │   Auth   │  │PDF / CRM │  │  Obras   │  │Atribuições│   │
 │  │ Service  │  │ Service  │  │ Service  │  │ Service   │   │
 │  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘   │
 │       └──────────────┴──────────────┴──────────────┘         │
@@ -52,13 +49,13 @@
 │              DATABASE (PostgreSQL - Supabase)                │
 │                                                               │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │ Usuarios │  │Prestadores│ │ Equipes  │  │  Obras   │   │
+│  │ Usuarios │  │  Deals   │  │ Propostas│  │  Obras   │   │
 │  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘   │
 │       │             │              │              │          │
 │       └─────────────┴──────────────┴──────────────┘          │
 │                            │                                  │
 │                   ┌────────▼────────┐                        │
-│                   │ Equipes_Membros │                        │
+│                   │ Interações CRM  │                        │
 │                   └────────┬────────┘                        │
 │                            │                                  │
 │                   ┌────────▼────────┐                        │

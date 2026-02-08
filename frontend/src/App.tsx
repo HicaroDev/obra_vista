@@ -21,6 +21,7 @@ import { Ferramentas } from './pages/Ferramentas';
 import { ModulesHub } from './pages/ModulesHub';
 import { Configuracoes } from './pages/Configuracoes';
 import { Leads } from './pages/Leads';
+import { CrmDealDetail } from './pages/CrmDealDetail';
 import { Layout } from './components/Layout';
 import { Toaster } from 'sonner';
 
@@ -48,6 +49,7 @@ function App() {
           <Route path="/equipes" element={<Equipes />} />
           <Route path="/kanban" element={<Kanban />} />
           <Route path="/crm" element={<CrmBoard />} />
+          <Route path="/crm/:id" element={<CrmDealDetail />} />
           <Route path="/crm/leads" element={<Leads />} />
           <Route path="/catalogos" element={<Catalogos />} />
           <Route path="/relatorios" element={<Relatorios />} />

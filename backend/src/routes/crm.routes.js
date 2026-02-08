@@ -36,4 +36,8 @@ router.get('/perguntas', crmController.getPerguntas);
 router.get('/deals/:dealId/vistoria', crmController.getVistoriaByDeal);
 router.post('/vistoria', crmController.createOrUpdateVistoria);
 
+// Indicadores e PDF
+router.get('/stats', crmController.getStats);
+router.get('/propostas/:id/pdf', crmController.generatePropostaPDF);
+
 module.exports = router;

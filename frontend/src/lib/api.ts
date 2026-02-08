@@ -444,6 +444,10 @@ export const crmApi = {
   propostas: {
     create: async (data: any): Promise<ApiResponse<any>> => fetchApi('/crm/propostas', { method: 'POST', body: JSON.stringify(data) }),
     getByDeal: async (dealId: number): Promise<ApiResponse<any[]>> => fetchApi(`/crm/deals/${dealId}/propostas`),
+    getPdfUrl: (id: number) => `${API_URL}/crm/propostas/${id}/pdf`,
+  },
+  stats: {
+    get: async (): Promise<ApiResponse<any>> => fetchApi('/crm/stats'),
   },
   interacoes: {
     create: async (data: { dealId: number; tipo: string; descricao: string; data?: string }): Promise<ApiResponse<any>> => fetchApi('/crm/interacoes', { method: 'POST', body: JSON.stringify(data) }),
